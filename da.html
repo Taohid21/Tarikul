@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfume Heaven - Super Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f4c3a; --secondary: #64748b; --success: #10b981;
+            --danger: #ef4444; --warning: #f59e0b; --info: #3b82f6;
+            --bg: #f1f5f9; --card: #ffffff; --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Hind Siliguri', 'Poppins', sans-serif; background-color: var(--bg); color: #1e293b; padding-bottom: 80px; }
+        
+        .header { background: var(--primary); color: #fff; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; }
+        .main-content { padding: 15px; max-width: 1000px; margin: auto; }
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Dashboard & Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        @media (min-width: 600px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-item { background: #fff; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .stat-item h3 { font-size: 20px; color: var(--primary); margin-bottom: 5px; }
+        .stat-item p { font-size: 11px; color: var(--secondary); text-transform: uppercase; font-weight: 700; }
+
+        /* Cards & Tables */
+        .card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+        .card-header { padding: 12px 15px; background: #f8fafc; border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .table-res { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+        th { background: #f8fafc; color: var(--secondary); font-weight: 600; }
+
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--secondary); }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; }
+        
+        .btn { padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 13px; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-outline { border: 1px solid var(--border); background: #fff; color: var(--text); }
+
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 10px; }
+        .modal-content { background: #fff; border-radius: 15px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 20px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; color: var(--secondary); }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: #fff; display: flex; border-top: 1px solid var(--border); box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: none; border: none; color: var(--secondary); cursor: pointer; font-size: 11px; font-weight: 600; }
+        .nav-btn.active { color: var(--primary); }
+        .nav-btn svg { width: 22px; height: 22px; margin-bottom: 4px; }
+        
+        .variant-row { display: flex; gap: 5px; margin-bottom: 5px; }
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #fff; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <header class="header"><h3>PERFUME HEAVEN - ADMIN</h3></header>
+
+    <div class="main-content">
+        
+        <!-- Dashboard -->
+        <div id="dashboard-view" class="view active">
+            <div class="stats-grid">
+                <div class="stat-item"><h3><span id="dash-prod-count">0</span></h3><p>Products</p></div>
+                <div class="stat-item"><h3>৳<span id="dash-income">0</span></h3><p>Sales</p></div>
+                <div class="stat-item"><h3><span id="dash-pending">0</span></h3><p>Pending</p></div>
+                <div class="stat-item"><h3><span id="dash-delivered">0</span></h3><p>Delivered</p></div>
+            </div>
+            <div class="card">
+                <div class="card-header">সাম্প্রতিক অর্ডার</div>
+                <div class="table-res"><table><thead><tr><th>ID</th><th>নাম</th><th>টাকা</th><th>অবস্থা</th></tr></thead><tbody id="dash-orders-list"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- Products -->
+        <div id="products-view" class="view">
+            <div class="card">
+                <div class="card-header">পণ্য তালিকা <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ নতুন পণ্য</button></div>
+                <div class="table-res">
+                    <table>
+                        <thead><tr><th>ছবি</th><th>নাম</th><th>অফার</th><th>অ্যাকশন</th></tr></thead>
+                        <tbody id="admin-products-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders -->
+        <div id="orders-view" class="view">
+            <div class="card">
+                <div class="card-header">অর্ডার ম্যানেজমেন্ট</div>
+                <div class="table-res">
+                    <table>
+                        <thead><tr><th>ID</th><th>নাম ও ফোন</th><th>টাকা</th><th>অবস্থা</th><th>অ্যাকশন</th></tr></thead>
+                        <tbody id="admin-orders-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div id="settings-view" class="view">
+            <div class="card">
+                <div class="card-header">💰 পেমেন্ট ও ডেলিভারি</div>
+                <div class="card-body">
+                    <div class="form-group"><label>ডেলিভারি চার্জ (৳)</label><input type="number" id="set-del-charge"></div>
+                    <div class="form-group"><label>বিকাশ নাম্বার</label><input type="text" id="set-bkash"></div>
+                    <div class="form-group"><label>নগদ নাম্বার</label><input type="text" id="set-nagad"></div>
+                    <button class="btn btn-primary" style="width:100%" onclick="savePaymentSettings()">আপডেট সেটিংস</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">🛒 অটো কার্ট অফার</div>
+                <div class="card-body">
+                    <div class="form-group"><label>মিনিমাম অর্ডার (৳)</label><input type="number" id="cart-rule-min"></div>
+                    <div class="form-group"><label>অফারের ধরণ</label><select id="cart-rule-type"><option value="none">কিছু না</option><option value="free_shipping">ফ্রি ডেলিভারি</option><option value="discount_pct">অতিরিক্ত ছাড় (%)</option></select></div>
+                    <div class="form-group"><label>ছাড় (%)</label><input type="number" id="cart-rule-val"></div>
+                    <button class="btn btn-primary" style="width:100%" onclick="saveCartRules()">আপডেট রুলস</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">🎟️ কুপন কোড</div>
+                <div class="card-body">
+                    <div style="display:flex; gap:8px; margin-bottom:15px;"><input type="text" id="cp-code" placeholder="CODE"><input type="number" id="cp-pct" placeholder="%" style="width:80px;"><button class="btn btn-success" onclick="addCoupon()">যোগ</button></div>
+                    <div id="admin-coupons-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h3 id="modal-title">পণ্য যোগ/এডিট</h3><hr style="margin:10px 0;">
+            <input type="hidden" id="edit-prod-id">
+            <div class="form-group"><label>পণ্যের নাম</label><input type="text" id="prod-title"></div>
+            <div class="form-group"><label>বিবরণ (Description)</label><textarea id="prod-desc" rows="3"></textarea></div>
+            <div class="form-group"><label>Image URL (Main)</label><input type="text" id="prod-img1"></div>
+            <div class="form-group"><label>Image URL (Hover)</label><input type="text" id="prod-img2"></div>
+            <div class="form-group"><label>ট্যাগ (New/Hot)</label><input type="text" id="prod-tag"></div>
+            <div id="variant-section">
+                <label>ভ্যারিয়েন্ট (নাম এবং দাম)</label>
+                <div id="variant-container"></div>
+                <button class="btn btn-outline btn-sm" style="margin-top:5px;" onclick="addVariantRow()">+ ভ্যারিয়েন্ট যোগ</button>
+            </div>
+            <hr style="margin:15px 0;">
+            <div style="display:flex; gap:10px;">
+                <div class="form-group" style="flex:1;"><label>ডিসকাউন্ট (%)</label><input type="number" id="prod-off-pct" value="0"></div>
+                <div class="form-group" style="flex:1; padding-top:30px;"><input type="checkbox" id="prod-off-ship"> <label style="display:inline;">Free Ship</label></div>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="saveProduct()">পণ্য সেভ করুন</button>
+            <button id="del-prod-btn" class="btn btn-danger" style="width:100%; margin-top:10px; display:none;" onclick="deleteProduct()">পণ্য ডিলিট করুন</button>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="modal">
+        <div class="modal-content" id="order-modal-body"></div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="switchView('dashboard-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>Dash</button>
+        <button class="nav-btn" onclick="switchView('products-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>Products</button>
+        <button class="nav-btn" onclick="switchView('orders-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>Orders</button>
+        <button class="nav-btn" onclick="switchView('settings-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1V11a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V13a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>Settings</button>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue, set, update, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY",
+            authDomain: "movie-92659.firebaseapp.com",
+            databaseURL: "https://movie-92659-default-rtdb.firebaseio.com",
+            projectId: "movie-92659",
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let products = {}, orders = {}, adminData = {};
+
+        // --- Navigation ---
+        window.switchView = (id, btn) => {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        };
+
+        // --- Load Data ---
+        onValue(ref(db, 'admin_controls'), snap => {
+            adminData = snap.val() || {};
+            loadSettings();
+            renderCoupons();
+            renderProducts();
+        });
+
+        onValue(ref(db, 'products'), snap => {
+            products = snap.val() || {};
+            renderProducts();
+            renderDashboard();
+        });
+
+        onValue(ref(db, 'orders'), snap => {
+            orders = snap.val() || {};
+            renderOrders();
+            renderDashboard();
+        });
+
+        // --- Dashboard ---
+        function renderDashboard() {
+            let pending = 0, delivered = 0, income = 0;
+            Object.values(orders).forEach(o => {
+                if(o.status === 'Pending') pending++;
+                if(o.status === 'Delivered') { delivered++; income += o.totalAmount; }
+            });
+            document.getElementById('dash-income').textContent = income;
+            document.getElementById('dash-pending').textContent = pending;
+            document.getElementById('dash-delivered').textContent = delivered;
+            document.getElementById('dash-prod-count').textContent = Object.keys(products).length;
+
+            const dashList = document.getElementById('dash-orders-list');
+            dashList.innerHTML = '';
+            Object.entries(orders).sort((a,b)=>b[1].orderTimestamp - a[1].orderTimestamp).slice(0, 5).forEach(([id, o]) => {
+                dashList.innerHTML += `<tr><td>#${o.publicId || id.slice(-5)}</td><td>${o.customerInfo.name}</td><td>৳${o.totalAmount}</td><td>${o.status}</td></tr>`;
+            });
+        }
+
+        // --- Settings ---
+        function loadSettings() {
+            const pay = adminData.payment_settings || {};
+            document.getElementById('set-del-charge').value = pay.deliveryCharge || 0;
+            document.getElementById('set-bkash').value = pay.bkash || '';
+            document.getElementById('set-nagad').value = pay.nagad || '';
+            const cart = adminData.cart_rules || {};
+            document.getElementById('cart-rule-min').value = cart.min_amount || 0;
+            document.getElementById('cart-rule-type').value = cart.reward_type || 'none';
+            document.getElementById('cart-rule-val').value = cart.discount_value || 0;
+        }
+
+        window.savePaymentSettings = () => {
+            set(ref(db, 'admin_controls/payment_settings'), {
+                deliveryCharge: Number(document.getElementById('set-del-charge').value),
+                bkash: document.getElementById('set-bkash').value,
+                nagad: document.getElementById('set-nagad').value
+            }).then(() => alert("Saved!"));
+        };
+
+        window.saveCartRules = () => {
+            set(ref(db, 'admin_controls/cart_rules'), {
+                min_amount: Number(document.getElementById('cart-rule-min').value),
+                reward_type: document.getElementById('cart-rule-type').value,
+                discount_value: Number(document.getElementById('cart-rule-val').value)
+            }).then(() => alert("Updated!"));
+        };
+
+        // --- Coupons ---
+        window.addCoupon = () => {
+            const code = document.getElementById('cp-code').value.toUpperCase().trim();
+            const pct = Number(document.getElementById('cp-pct').value);
+            if(!code || !pct) return;
+            set(ref(db, `admin_controls/coupons/${code}`), { percent: pct, active: true }).then(() => {
+                document.getElementById('cp-code').value = ''; document.getElementById('cp-pct').value = '';
+            });
+        };
+        function renderCoupons() {
+            const list = document.getElementById('admin-coupons-list'); list.innerHTML = '';
+            const cps = adminData.coupons || {};
+            Object.entries(cps).forEach(([code, data]) => {
+                list.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; padding:8px; background:#f8fafc; border:1px solid #eee; border-radius:8px;">
+                    <span><b>${code}</b> (-${data.percent}%)</span>
+                    <button onclick="removeCoupon('${code}')" style="color:red; border:none; background:none;">ডিলিট</button>
+                </div>`;
+            });
+        }
+        window.removeCoupon = (code) => remove(ref(db, `admin_controls/coupons/${code}`));
+
+        // --- Products ---
+        function renderProducts() {
+            const list = document.getElementById('admin-products-list');
+            list.innerHTML = '';
+            const rules = adminData.product_rules || {};
+            Object.entries(products).forEach(([id, p]) => {
+                const rule = rules[id] || { percent: 0, free_shipping: false };
+                list.innerHTML += `<tr>
+                    <td><img src="${p.imageUrl}" style="width:35px; border-radius:4px;"></td>
+                    <td>${p.title}</td>
+                    <td><span class="badge" style="background:var(--info)">-${rule.percent}%</span> ${rule.free_shipping?'<span class="badge" style="background:var(--success)">Free Ship</span>':''}</td>
+                    <td><button class="btn btn-outline btn-sm" onclick="openProductModal('${id}')">এডিট</button></td>
+                </tr>`;
+            });
+        }
+
+        window.addVariantRow = (name = '', price = '') => {
+            const container = document.getElementById('variant-container');
+            const div = document.createElement('div');
+            div.className = 'variant-row';
+            div.innerHTML = `<input type="text" placeholder="Size" value="${name}" class="v-name"><input type="number" placeholder="Price" value="${price}" class="v-price"><button onclick="this.parentElement.remove()" style="color:red; border:none; background:none;">X</button>`;
+            container.appendChild(div);
+        };
+
+        window.openProductModal = (id = '') => {
+            const modal = document.getElementById('product-modal');
+            const container = document.getElementById('variant-container');
+            modal.style.display = 'flex'; container.innerHTML = '';
+            document.getElementById('del-prod-btn').style.display = id ? 'block' : 'none';
+            
+            if(id) {
+                const p = products[id];
+                const r = (adminData.product_rules && adminData.product_rules[id]) || { percent: 0, free_shipping: false };
+                document.getElementById('edit-prod-id').value = id;
+                document.getElementById('prod-title').value = p.title;
+                document.getElementById('prod-desc').value = p.description || '';
+                document.getElementById('prod-img1').value = p.imageUrl || '';
+                document.getElementById('prod-img2').value = p.imageUrl2 || '';
+                document.getElementById('prod-tag').value = p.tag || '';
+                document.getElementById('prod-off-pct').value = r.percent;
+                document.getElementById('prod-off-ship').checked = r.free_shipping;
+                if(p.variants) Object.values(p.variants).forEach(v => addVariantRow(v.name, v.price));
+            } else {
+                document.getElementById('edit-prod-id').value = '';
+                document.getElementById('prod-title').value = '';
+                addVariantRow();
+            }
+        };
+
+        window.saveProduct = () => {
+            const id = document.getElementById('edit-prod-id').value;
+            const vars = {};
+            document.querySelectorAll('.variant-row').forEach((row, index) => {
+                const name = row.querySelector('.v-name').value;
+                const price = row.querySelector('.v-price').value;
+                if(name && price) vars['v' + index] = { name, price: Number(price) };
+            });
+
+            const pData = {
+                title: document.getElementById('prod-title').value,
+                description: document.getElementById('prod-desc').value,
+                imageUrl: document.getElementById('prod-img1').value,
+                imageUrl2: document.getElementById('prod-img2').value,
+                tag: document.getElementById('prod-tag').value,
+                variants: vars,
+                timestamp: id ? products[id].timestamp : new Date().toISOString()
+            };
+
+            const rData = {
+                percent: Number(document.getElementById('prod-off-pct').value),
+                free_shipping: document.getElementById('prod-off-ship').checked
+            };
+
+            const pRef = id ? ref(db, `products/${id}`) : push(ref(db, 'products'));
+            const finalId = id || pRef.key;
+
+            set(pRef, pData).then(() => {
+                set(ref(db, `admin_controls/product_rules/${finalId}`), rData).then(() => {
+                    alert("Product Saved!"); closeModal();
+                });
+            });
+        };
+
+        window.deleteProduct = () => {
+            const id = document.getElementById('edit-prod-id').value;
+            if(confirm("Delete this product?")) {
+                remove(ref(db, `products/${id}`));
+                remove(ref(db, `admin_controls/product_rules/${id}`));
+                closeModal();
+            }
+        };
+
+        // --- Orders ---
+        function renderOrders() {
+            const list = document.getElementById('admin-orders-list'); list.innerHTML = '';
+            Object.entries(orders).sort((a,b)=>b[1].orderTimestamp - a[1].orderTimestamp).forEach(([id, o]) => {
+                list.innerHTML += `<tr>
+                    <td>#${o.publicId || id.slice(-5)}</td>
+                    <td>${o.customerInfo.name}<br><small>${o.customerInfo.phone}</small></td>
+                    <td>৳${o.totalAmount}</td>
+                    <td><span class="badge" style="background:${getStatusColor(o.status)}">${o.status || 'Pending'}</span></td>
+                    <td><button class="btn btn-outline btn-sm" onclick="viewOrder('${id}')">দেখুন</button></td>
+                </tr>`;
+            });
+        }
+        function getStatusColor(s) { return s==='Delivered'?'#10b981':s==='Cancelled'?'#ef4444':s==='Shipped'?'#3b82f6':'#f59e0b'; }
+
+        window.viewOrder = (id) => {
+            const o = orders[id];
+            const body = document.getElementById('order-modal-body');
+            document.getElementById('order-modal').style.display = 'flex';
+            
+            const infoText = `নাম: ${o.customerInfo.name}\nফোন: ${o.customerInfo.phone}\nঠিকানা: ${o.customerInfo.address}, ${o.customerInfo.division}\nমোট: ৳${o.totalAmount}`;
+
+            body.innerHTML = `
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h3 style="margin-bottom:15px;">Order #${o.publicId || id.slice(-5)}</h3>
+                <div style="background:#f8fafc; padding:12px; border-radius:10px; margin-bottom:15px; position:relative; font-size:14px;">
+                    <button class="btn btn-primary btn-sm" style="position:absolute; right:10px; top:10px;" onclick="copyToClipboard(\`${infoText}\`)">কপি</button>
+                    <p><b>ক্রেতা:</b> ${o.customerInfo.name}</p>
+                    <p><b>ফোন:</b> ${o.customerInfo.phone}</p>
+                    <p><b>ঠিকানা:</b> ${o.customerInfo.address}, ${o.customerInfo.division}</p>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <p><b>পণ্যসমূহ:</b></p>
+                    ${o.items.map(i => `<div style="font-size:13px; margin-top:5px; border-bottom:1px solid #f0f0f0; padding-bottom:5px;">• ${i.title} (${i.variant.name}) x ${i.quantity} = ৳${i.variant.price * i.quantity}</div>`).join('')}
+                </div>
+                <div style="background:#fff7ed; padding:10px; border-radius:10px; border:1px solid #ffedd5; font-size:14px; margin-bottom:15px;">
+                    <p><b>পেমেন্ট তথ্য:</b></p>
+                    <p>ধরণ: ${o.paymentInfo.type} | মাধ্যম: ${o.paymentInfo.method}</p>
+                    ${o.paymentInfo.transactionId ? `<p>TrxID: ${o.paymentInfo.transactionId}</p>` : ''}
+                    <p>পেমেন্ট করেছেন: ৳${o.paymentInfo.amountPaid || 0}</p>
+                </div>
+                <div style="font-size:14px; border-top:1px solid #eee; padding-top:10px;">
+                    <p>সাবটোটাল: ৳${o.subtotal}</p>
+                    <p>ডেলিভারি চার্জ: ৳${o.shippingCost}</p>
+                    ${o.discountAmount ? `<p style="color:red;">ডিসকাউন্ট: -৳${o.discountAmount}</p>` : ''}
+                    <p style="font-size:18px; font-weight:700; color:var(--primary);">মোট প্রদেয়: ৳${o.totalAmount}</p>
+                </div>
+                <select id="up-status-${id}" onchange="updateStatus('${id}', this.value)" style="margin-top:15px;">
+                    <option value="Pending" ${o.status==='Pending'?'selected':''}>Pending</option>
+                    <option value="Confirmed" ${o.status==='Confirmed'?'selected':''}>Confirmed</option>
+                    <option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option>
+                    <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                    <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+                </select>
+                <button class="btn btn-outline" style="width:100%; margin-top:10px; color:red;" onclick="deleteOrder('${id}')">অর্ডার ডিলিট</button>
+            `;
+        };
+
+        window.copyToClipboard = (text) => {
+            const el = document.createElement('textarea');
+            el.value = text; document.body.appendChild(el);
+            el.select(); document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("কপি হয়েছে!");
+        };
+
+        window.updateStatus = (id, val) => update(ref(db, `orders/${id}`), { status: val });
+        window.deleteOrder = (id) => { if(confirm("Delete Order?")) remove(ref(db, `orders/${id}`)).then(()=>closeModal()); };
+        window.closeModal = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+
+    </script>
+</body>
+</html>

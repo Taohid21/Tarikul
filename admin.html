@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Perfume Heaven</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #f1f5f9; --card: #ffffff; --primary: #2563eb; --text: #0f172a; --border: #e2e8f0; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 50px; }
+        .topbar { background: var(--card); padding: 15px 20px; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; font-size: 1.2rem; font-weight: bold; }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 25px; border: 1px solid var(--border); }
+        h2 { font-size: 1.1rem; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; color: var(--primary); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #64748b; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; width: 100%; }
+        .list-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--border); }
+        .badge { background: #eff6ff; color: var(--primary); padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="topbar">⚙️ Admin Control Center</div>
+    <div class="container">
+        
+        <!-- Payment & Delivery Settings -->
+        <section class="card">
+            <h2>💰 পেমেন্ট ও ডেলিভারি সেটিংস</h2>
+            <div class="grid-2">
+                <div class="form-group"><label>ডিফল্ট ডেলিভারি চার্জ (৳)</label><input type="number" id="del-charge" value="110"></div>
+                <div class="form-group"><label>বিকাশ নাম্বার</label><input type="text" id="bkash-num" placeholder="017..."></div>
+                <div class="form-group"><label>নগদ নাম্বার</label><input type="text" id="nagad-num" placeholder="017..."></div>
+            </div>
+            <button class="btn" id="save-payment-btn">সেটিংস সেভ করুন</button>
+        </section>
+
+        <!-- Cart Rules -->
+        <section class="card">
+            <h2>🛒 কার্ট রুলস (অটোমেটিক অফার)</h2>
+            <div class="grid-2">
+                <div class="form-group"><label>কার্টের মোট মূল্য (৳) এর বেশি হলে</label><input type="number" id="rule-min"></div>
+                <div class="form-group">
+                    <label>অফার</label>
+                    <select id="rule-type"><option value="none">কিছু না</option><option value="free_shipping">ফ্রি ডেলিভারি</option><option value="discount_pct">পার্সেন্টেজ ছাড় (%)</option></select>
+                </div>
+                <div class="form-group" id="rule-disc-div" style="display:none;"><label>ছাড় (%)</label><input type="number" id="rule-disc-val"></div>
+            </div>
+            <button class="btn" id="save-rules-btn">রুলস আপডেট করুন</button>
+        </section>
+
+        <!-- Product Specific Rules -->
+        <section class="card">
+            <h2>📦 নির্দিষ্ট প্রোডাক্টে অফার</h2>
+            <div class="form-group"><label>প্রোডাক্ট</label><select id="prod-select"><option>লোড হচ্ছে...</option></select></div>
+            <div class="grid-2">
+                <div class="form-group"><label>ছাড় (%)</label><input type="number" id="prod-pct"></div>
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-top:20px;">
+                    <input type="checkbox" id="prod-free-ship"> <label style="margin:0;">ফ্রি ডেলিভারি</label>
+                </div>
+            </div>
+            <button class="btn" id="add-prod-rule" style="background:#10b981;">যুক্ত করুন</button>
+            <div id="prod-rules-list" style="margin-top:15px; border:1px solid var(--border); border-radius:6px;"></div>
+        </section>
+
+        <!-- Coupons -->
+        <section class="card">
+            <h2>🎟️ কুপন কোড</h2>
+            <div class="grid-2">
+                <div class="form-group"><label>কোড</label><input type="text" id="coupon-code" style="text-transform:uppercase;"></div>
+                <div class="form-group"><label>ছাড় (%)</label><input type="number" id="coupon-pct"></div>
+            </div>
+            <button class="btn" id="add-coupon" style="background:#8b5cf6;">কুপন তৈরি করুন</button>
+            <div id="coupons-list" style="margin-top:15px; border:1px solid var(--border); border-radius:6px;"></div>
+        </section>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, get, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const app = initializeApp({ apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY", authDomain: "movie-92659.firebaseapp.com", databaseURL: "https://movie-92659-default-rtdb.firebaseio.com", projectId: "movie-92659" });
+        const db = getDatabase(app);
+
+        // Load & Save Payment Settings
+        get(ref(db, 'admin_controls/payment_settings')).then(snap => {
+            if(snap.exists()) {
+                const d = snap.val();
+                if(d.deliveryCharge) document.getElementById('del-charge').value = d.deliveryCharge;
+                if(d.bkash) document.getElementById('bkash-num').value = d.bkash;
+                if(d.nagad) document.getElementById('nagad-num').value = d.nagad;
+            }
+        });
+        document.getElementById('save-payment-btn').onclick = () => {
+            set(ref(db, 'admin_controls/payment_settings'), {
+                deliveryCharge: Number(document.getElementById('del-charge').value) || 110,
+                bkash: document.getElementById('bkash-num').value, nagad: document.getElementById('nagad-num').value
+            }).then(() => alert("Saved!"));
+        };
+
+        // Cart Rules
+        document.getElementById('rule-type').onchange = (e) => document.getElementById('rule-disc-div').style.display = e.target.value === 'discount_pct' ? 'block' : 'none';
+        get(ref(db, 'admin_controls/cart_rules')).then(snap => {
+            if(snap.exists()) {
+                const d = snap.val(); document.getElementById('rule-min').value = d.min_amount || '';
+                document.getElementById('rule-type').value = d.reward_type || 'none';
+                if(d.reward_type === 'discount_pct') { document.getElementById('rule-disc-div').style.display='block'; document.getElementById('rule-disc-val').value = d.discount_value; }
+            }
+        });
+        document.getElementById('save-rules-btn').onclick = () => {
+            set(ref(db, 'admin_controls/cart_rules'), { min_amount: Number(document.getElementById('rule-min').value), reward_type: document.getElementById('rule-type').value, discount_value: Number(document.getElementById('rule-disc-val').value) }).then(()=>alert("Updated!"));
+        };
+
+        // Load Products & Rules
+        let pNames = {};
+        onValue(ref(db, 'products'), s => {
+            const sel = document.getElementById('prod-select'); sel.innerHTML = '<option value="">সিলেক্ট করুন</option>';
+            if(s.exists()) { s.forEach(c => { pNames[c.key] = c.val().title; sel.innerHTML += `<option value="${c.key}">${c.val().title}</option>`; }); }
+        });
+        onValue(ref(db, 'admin_controls/product_rules'), s => {
+            const list = document.getElementById('prod-rules-list'); list.innerHTML = '';
+            if(s.exists()) { s.forEach(c => { list.innerHTML += `<div class="list-item"><span>${pNames[c.key]||c.key} <span class="badge">-${c.val().percent||0}%</span> ${c.val().free_shipping?'<span class="badge">Free Del</span>':''}</span><button onclick="remProd('${c.key}')">X</button></div>`; }); }
+        });
+        document.getElementById('add-prod-rule').onclick = () => {
+            const id = document.getElementById('prod-select').value; if(!id) return;
+            set(ref(db, `admin_controls/product_rules/${id}`), { percent: Number(document.getElementById('prod-pct').value), free_shipping: document.getElementById('prod-free-ship').checked });
+        };
+        window.remProd = (id) => remove(ref(db, `admin_controls/product_rules/${id}`));
+
+        // Coupons
+        onValue(ref(db, 'admin_controls/coupons'), s => {
+            const list = document.getElementById('coupons-list'); list.innerHTML = '';
+            if(s.exists()) { s.forEach(c => { list.innerHTML += `<div class="list-item"><span>${c.key} <span class="badge">-${c.val().percent}%</span></span><button onclick="remCoup('${c.key}')">X</button></div>`; }); }
+        });
+        document.getElementById('add-coupon').onclick = () => {
+            const code = document.getElementById('coupon-code').value.toUpperCase().trim();
+            if(!code) return; set(ref(db, `admin_controls/coupons/${code}`), { percent: Number(document.getElementById('coupon-pct').value), active: true });
+        };
+        window.remCoup = (id) => remove(ref(db, `admin_controls/coupons/${id}`));
+    </script>
+</body>
+</html>
