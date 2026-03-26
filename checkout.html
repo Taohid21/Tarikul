@@ -6,91 +6,132 @@
     <title>Checkout - Perfume Heaven</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary-color: #1B4332; --secondary-color: #6c757d; --success-color: #2a9d8f; --danger-color: #e76f51; --background-color: #f8f9fa; --card-bg: #ffffff; --border-color: #e9ecef; --font-family-bn: 'Hind Siliguri', sans-serif; --font-family-en: 'Poppins', sans-serif; --border-radius: 12px; }
-        body { font-family: var(--font-family-bn), var(--font-family-en); background: var(--background-color); margin: 0; color: #333; }
+        :root { --primary-color: #0f4c3a; --secondary-color: #6c757d; --success-color: #2a9d8f; --danger-color: #e94560; --background-color: #f4f7f9; --card-bg: #ffffff; --border-color: #e9ecef; --font-family-bn: 'Hind Siliguri', sans-serif; --font-family-en: 'Poppins', sans-serif; --border-radius: 12px; }
+        body { font-family: var(--font-family-bn), var(--font-family-en); background: var(--background-color); margin: 0; color: #333; line-height: 1.6;}
+        * { box-sizing: border-box; outline: none; }
+        
         .container { max-width: 800px; margin: 30px auto; padding: 0 15px; }
         .card { background: var(--card-bg); padding: 30px; border-radius: var(--border-radius); box-shadow: 0 6px 20px rgba(0,0,0,0.05); }
-        .card-header h2 { text-align: center; color: var(--primary-color); margin-bottom: 25px; }
-        .review-cart-item { display: flex; gap: 15px; border-bottom: 1px solid var(--border-color); padding: 15px 0; }
-        .review-cart-item img { width: 60px; height: 60px; border-radius: 8px; }
-        .review-cart-item-info { flex-grow: 1; } .title { font-weight: 600; margin:0; }
-        .variant-select { width: 100%; padding: 6px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; font-family: inherit; }
+        .card-header h2 { text-align: center; color: var(--primary-color); margin-bottom: 25px; font-weight: 700;}
         
+        /* Cart Items */
+        .review-cart-item { display: flex; gap: 15px; border-bottom: 1px solid var(--border-color); padding: 15px 0; align-items: center;}
+        .review-cart-item img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;}
+        .review-cart-item-info { flex-grow: 1; } 
+        .title { font-weight: 600; margin:0 0 5px 0; font-size: 1.05rem;}
+        .variant-select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 6px; border: 1px solid #ced4da; font-family: inherit; font-size: 0.95rem; background: #fafafa;}
+        .item-price { font-weight: 700; color: var(--primary-color); margin-top: 5px; }
+
         /* Coupon Section */
         .coupon-box { display: flex; gap: 10px; margin-top: 20px; }
-        .coupon-box input { flex-grow: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; text-transform: uppercase; }
-        .coupon-box button { padding: 10px 20px; background: var(--secondary-color); color: white; border: none; border-radius: 6px; cursor: pointer; }
-        #coupon-msg { font-size: 0.85rem; margin-top: 5px; font-weight: 600; }
+        .coupon-box input { flex-grow: 1; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; text-transform: uppercase; font-family: var(--font-family-en); }
+        .coupon-box button { padding: 12px 25px; background: var(--secondary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s;}
+        .coupon-box button:hover { background: #5a6268; }
+        #coupon-msg { font-size: 0.9rem; margin-top: 8px; font-weight: 600; }
         
         /* Totals */
-        .totals-box p { display: flex; justify-content: space-between; margin: 10px 0; font-size: 1rem; }
-        .totals-box .discount-text { color: var(--success-color); font-weight: 600; }
-        .totals-box .grand-total { font-weight: bold; font-size: 1.2rem; border-top: 2px solid var(--border-color); padding-top: 10px; color: var(--primary-color); }
+        .totals-box { margin-top:25px; border-top:2px dashed var(--border-color); padding-top:20px; background: #fafafa; padding: 20px; border-radius: 10px;}
+        .totals-box p { display: flex; justify-content: space-between; margin: 10px 0; font-size: 1.05rem; }
+        .totals-box .discount-text { color: var(--danger-color); font-weight: 600; }
+        .totals-box .grand-total { font-weight: bold; font-size: 1.3rem; border-top: 2px solid var(--border-color); padding-top: 15px; color: var(--primary-color); margin-top: 15px;}
         
-        /* Form & Payment */
-        .form-group { margin-bottom: 15px; } .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; }
-        .payment-methods { display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; }
-        .payment-method { border: 2px solid var(--border-color); border-radius: 8px; padding: 10px; cursor: pointer; }
-        .payment-method.active { border-color: var(--primary-color); } .payment-method img { height: 40px; }
-        .payment-instructions { background: #f0f8f5; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 15px; }
-        .btn { padding: 14px; width: 100%; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: var(--primary-color); color: white; margin-top: 15px; }
+        /* Form & Delivery */
+        h4 { color: var(--primary-color); font-size: 1.2rem; margin-bottom: 15px; border-bottom: 2px dashed #eee; padding-bottom: 10px;}
+        .form-group { margin-bottom: 18px; } 
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem;}
+        .form-group input, .form-group select { width: 100%; padding: 14px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; font-size: 1rem; font-family: inherit; transition: 0.3s;}
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(15, 76, 58, 0.1); }
+        
+        /* Dynamic Payment Options */
+        .payment-option-selector { margin-bottom: 20px; }
+        .payment-option-selector .option { padding: 15px; border: 2px solid var(--border-color); border-radius: 10px; margin-bottom: 15px; cursor: pointer; transition: all .3s; background: #fff;} 
+        .payment-option-selector .option:hover { border-color: #a5a5a5; } 
+        .payment-option-selector .option.active { border-color: var(--primary-color); background-color: #f0f9ff; box-shadow: 0 4px 10px rgba(15,76,58,0.1);} 
+        .payment-option-selector strong { font-size: 1.1rem; color: var(--primary-color); display: block; margin-bottom: 5px;}
+        .payment-option-selector span { font-size: 0.95rem; color: #555; }
+
+        /* Payment Module (bKash/Nagad) */
+        #payment-module { border: 2px dashed var(--border-color); padding: 20px; border-radius: 10px; background: #fff; margin-bottom: 20px;}
+        .payment-methods { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
+        .payment-method { border: 2px solid var(--border-color); border-radius: 8px; padding: 10px 20px; cursor: pointer; transition: 0.3s;}
+        .payment-method.active { border-color: var(--primary-color); background: #f8fff9; box-shadow: 0 4px 12px rgba(15,76,58, 0.15);} 
+        .payment-method img { height: 35px; display: block;}
+        .payment-instructions { background: #f8f9fa; padding: 15px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
+        
+        .btn { padding: 16px; width: 100%; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; background: var(--primary-color); color: white; margin-top: 15px; transition: 0.3s; font-family: inherit;}
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(15,76,58,0.2);}
+        .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none;}
+
+        #success-view svg { width: 80px; color: var(--success-color); margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Order Summary & Checkout -->
         <div id="checkout-view" class="card">
-            <div class="card-header"><h2>চেকআউট</h2></div>
+            <div class="card-header"><h2>আপনার ব্যাগ (চেকআউট)</h2></div>
             
             <div id="cart-items"></div>
             
             <!-- Coupon -->
             <div class="coupon-box">
-                <input type="text" id="coupon-input" placeholder="কুপন কোড (যদি থাকে)">
-                <button id="apply-coupon-btn">Apply</button>
+                <input type="text" id="coupon-input" placeholder="কুপন কোড">
+                <button id="apply-coupon-btn">এপ্লাই করুন</button>
             </div>
             <div id="coupon-msg"></div>
 
             <!-- Totals -->
-            <div class="totals-box" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+            <div class="totals-box">
                 <p><span>সাবটোটাল</span><span id="txt-subtotal">৳ 0</span></p>
                 <p id="row-discount" style="display:none;" class="discount-text"><span>অফার ডিসকাউন্ট</span><span id="txt-discount">- ৳ 0</span></p>
                 <p id="row-coupon" style="display:none;" class="discount-text"><span>কুপন ডিসকাউন্ট</span><span id="txt-coupon">- ৳ 0</span></p>
-                <p><span>ডেলিভারি চার্জ</span><span id="txt-delivery">৳ 0</span></p>
-                <p class="grand-total"><span>সর্বমোট</span><span id="txt-total">৳ 0</span></p>
+                <p><span>ডেলিভারি চার্জ</span><strong id="txt-delivery" style="color: var(--success-color);">৳ 0</strong></p>
+                <p class="grand-total"><span>সর্বমোট প্রদেয়</span><span id="txt-total">৳ 0</span></p>
             </div>
 
-            <hr style="border:0; border-top:1px solid #eee; margin:25px 0;">
+            <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
 
             <!-- Customer Info -->
-            <h4>ডেলিভারি তথ্য</h4>
-            <div class="form-group"><label>নাম</label><input type="text" id="c-name" required></div>
-            <div class="form-group"><label>ফোন</label><input type="text" id="c-phone" required></div>
-            <div class="form-group"><label>ঠিকানা</label><input type="text" id="c-address" required></div>
+            <h4>১. ডেলিভারি ঠিকানা দিন</h4>
+            <div class="form-group"><label>আপনার নাম</label><input type="text" id="c-name" placeholder="সম্পূর্ণ নাম লিখুন" required></div>
+            <div class="form-group"><label>মোবাইল নম্বর</label><input type="tel" id="c-phone" placeholder="01xxxxxxxxx" required></div>
+            <div class="form-group"><label>সম্পূর্ণ ঠিকানা</label><input type="text" id="c-address" placeholder="বাসা নং, রোড নং, এলাকা, থানা" required></div>
+            <div class="form-group">
+                <label>জেলা</label>
+                <select id="c-district" required>
+                    <option value="">জেলা নির্বাচন করুন</option>
+                </select>
+            </div>
             
-            <hr style="border:0; border-top:1px solid #eee; margin:25px 0;">
+            <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
 
             <!-- Payment Info -->
-            <h4>পেমেন্ট</h4>
-            <div style="margin-bottom:15px;">
-                <label><input type="radio" name="payType" value="advance" checked> <span id="lbl-adv">শুধু ডেলিভারি চার্জ (৳ --) পেমেন্ট করুন</span></label><br>
-                <label><input type="radio" name="payType" value="full"> <span id="lbl-full">সম্পূর্ণ টাকা (৳ --) পেমেন্ট করুন</span></label>
+            <h4>২. পেমেন্ট মেথড নির্বাচন করুন</h4>
+            
+            <div id="payment-options-container" class="payment-option-selector">
+                <!-- Options injected via JS -->
             </div>
             
-            <div class="payment-methods">
-                <div class="payment-method active" data-method="bKash"><img src="https://freelogopng.com/images/all_img/1656227518bkash-logo-png.png"></div>
-                <div class="payment-method" data-method="Nagad"><img src="https://freepnglogo.com/images/all_img/1725618764nagad-horizontal-logo-png.png"></div>
+            <div id="payment-module">
+                <div class="payment-methods">
+                    <div class="payment-method active" data-method="bKash"><img src="https://freelogopng.com/images/all_img/1656227518bkash-logo-png.png" alt="bKash"></div>
+                    <div class="payment-method" data-method="Nagad"><img src="https://freepnglogo.com/images/all_img/1725618764nagad-horizontal-logo-png.png" alt="Nagad"></div>
+                </div>
+                <div class="payment-instructions" id="pay-instructions">লোড হচ্ছে...</div>
+                <div class="form-group">
+                    <label>Transaction ID (TrxID)</label>
+                    <input type="text" id="trx-id" placeholder="TrxID এখানে পেস্ট করুন" required>
+                </div>
             </div>
-            <div class="payment-instructions" id="pay-instructions">লোড হচ্ছে...</div>
-            <div class="form-group"><label>Transaction ID (TrxID)</label><input type="text" id="trx-id" required></div>
 
             <button id="submit-order" class="btn">অর্ডার কনফার্ম করুন</button>
         </div>
 
-        <div id="success-view" class="card" style="display:none; text-align:center;">
-            <h2>অর্ডার সফল হয়েছে! 🎉</h2><p>আপনার অর্ডারের জন্য ধন্যবাদ।</p>
-            <button onclick="window.location.href='index.html'" class="btn">হোমে ফিরে যান</button>
+        <div id="success-view" class="card" style="display:none; text-align:center; padding: 60px 20px;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <h2 style="color:var(--success-color); margin-bottom:10px;">অর্ডার সফল হয়েছে! 🎉</h2>
+            <p style="color:var(--secondary-color); margin-bottom: 25px;">আপনার অর্ডারের জন্য ধন্যবাদ। আমরা খুব শীঘ্রই আপনার সাথে যোগাযোগ করব।</p>
+            <button onclick="window.location.href='index.html'" class="btn" style="width: auto; padding: 12px 30px;">হোমে ফিরে যান</button>
         </div>
     </div>
 
@@ -103,14 +144,19 @@
         const db = getDatabase(app); const auth = getAuth(app);
 
         let cart = JSON.parse(localStorage.getItem('shoppingCart') || '[]');
-        let adminData = { payment: { deliveryCharge: 110, bkash: '', nagad: '' }, cartRules: {}, prodRules: {}, coupons: {} };
+        let adminData = { payment: { deliveryCharge: 110, bkash: '01798796479', nagad: '01798796479' }, cartRules: {}, prodRules: {}, coupons: {} };
         let appliedCoupon = null;
+
+        // Populate Districts
+        const dists = ["ঢাকা", "ফরিদপুর", "গাজীপুর", "গোপালগঞ্জ", "কিশোরগঞ্জ", "মাদারীপুর", "মানিকগঞ্জ", "মুন্সিগঞ্জ", "নারায়ণগঞ্জ", "নরসিংদী", "শরীয়তপুর", "টাঙ্গাইল", "বগুড়া", "পাবনা", "রাজশাহী", "সিরাজগঞ্জ", "রংপুর", "দিনাজপুর", "চট্টগ্রাম", "কুমিল্লা", "কক্সবাজার", "ফেনী", "নোয়াখালী", "সিলেট", "হবিগঞ্জ", "মৌলভীবাজার", "খুলনা", "যশোর", "কুষ্টিয়া", "বরিশাল", "ভোলা", "পটুয়াখালী"];
+        const distSelect = document.getElementById('c-district');
+        dists.sort().forEach(d => distSelect.innerHTML += `<option value="${d}">${d}</option>`);
 
         // Load Admin Data
         onValue(ref(db, 'admin_controls'), snap => {
             if(snap.exists()) {
                 const d = snap.val();
-                if(d.payment_settings) adminData.payment = d.payment_settings;
+                if(d.payment_settings) adminData.payment = { ...adminData.payment, ...d.payment_settings };
                 if(d.cart_rules) adminData.cartRules = d.cart_rules;
                 if(d.product_rules) adminData.prodRules = d.product_rules;
                 if(d.coupons) adminData.coupons = d.coupons;
@@ -119,101 +165,261 @@
         });
 
         const renderCart = () => {
-            if(cart.length === 0) return document.body.innerHTML = '<h3 style="text-align:center; margin-top:50px;">কার্ট খালি!</h3>';
-            const container = document.getElementById('cart-items'); container.innerHTML = '';
+            if(cart.length === 0) return document.body.innerHTML = '<div style="text-align:center; padding: 100px 20px;"><h2>আপনার ব্যাগ খালি!</h2><br><a href="index.html" class="btn" style="text-decoration:none; padding:10px 20px;">শপিং শুরু করুন</a></div>';
+            
+            const container = document.getElementById('cart-items'); 
+            container.innerHTML = '';
             
             cart.forEach(item => {
-                const variantHTML = item.variants ? `<select class="variant-select" onchange="window.changeVar('${item.id}', this.value)">${Object.keys(item.variants).map(k => `<option value="${k}" ${item.selectedVariantKey === k ? 'selected':''}>${item.variants[k].name} - ৳${item.variants[k].price}</option>`).join('')}</select>` : '';
-                container.innerHTML += `<div class="review-cart-item"><img src="${item.imageUrl}"> <div class="review-cart-item-info"><p class="title">${item.title} (x${item.quantity})</p>${variantHTML}</div></div>`;
+                // Ensure initial variant is selected if missing
+                if (item.variants && !item.selectedVariantKey) {
+                    item.selectedVariantKey = Object.keys(item.variants)[0];
+                }
+                
+                let currentPrice = item.variants ? item.variants[item.selectedVariantKey].price : item.price;
+                
+                const variantHTML = item.variants ? `<select class="variant-select" onchange="window.changeVar('${item.id}', this.value)">${Object.keys(item.variants).map(k => `<option value="${k}" ${item.selectedVariantKey === k ? 'selected':''}>${item.variants[k].name}</option>`).join('')}</select>` : '';
+                
+                container.innerHTML += `
+                    <div class="review-cart-item">
+                        <img src="${item.imageUrl}"> 
+                        <div class="review-cart-item-info">
+                            <p class="title">${item.title}</p>
+                            <span style="font-size:0.9rem; color:#666;">পরিমাণ: ${item.quantity}</span>
+                            ${variantHTML}
+                            <div class="item-price">৳ ${currentPrice * item.quantity}</div>
+                        </div>
+                    </div>`;
             });
             calculateTotals();
         };
 
-        window.changeVar = (id, varKey) => { const it = cart.find(i=>i.id===id); if(it) it.selectedVariantKey = varKey; calculateTotals(); };
+        window.changeVar = (id, varKey) => { 
+            const it = cart.find(i=>i.id===id); 
+            if(it) {
+                it.selectedVariantKey = varKey; 
+                localStorage.setItem('shoppingCart', JSON.stringify(cart)); // Save immediately
+                renderCart(); // Re-render to update price labels
+            }
+        };
 
         const calculateTotals = () => {
-            let baseSubtotal = 0, productDiscounts = 0, hasFreeShippingProd = false;
+            let baseSubtotal = 0, productDiscounts = 0, isFreeShipping = false, isCodEnabled = false;
 
             cart.forEach(item => {
-                const price = item.variants && item.selectedVariantKey ? item.variants[item.selectedVariantKey].price : item.price;
+                const price = Number(item.variants && item.selectedVariantKey ? item.variants[item.selectedVariantKey].price : item.price);
                 const itemTotal = price * item.quantity;
                 baseSubtotal += itemTotal;
                 
-                // Check Product Rules
+                // Check Rules
                 if(adminData.prodRules[item.id]) {
                     const pr = adminData.prodRules[item.id];
                     if(pr.percent) productDiscounts += (itemTotal * pr.percent / 100);
-                    if(pr.free_shipping) hasFreeShippingProd = true;
+                    if(pr.free_shipping) isFreeShipping = true;
+                    if(pr.cod_enabled) isCodEnabled = true; // If ANY item allows COD
                 }
             });
 
             let finalSub = baseSubtotal - productDiscounts;
-            let cartDisc = 0, isDeliveryFree = hasFreeShippingProd;
+            let cartDisc = 0;
 
-            // Check Cart Rules (Global)
+            // Global Cart Rules
             if(adminData.cartRules.min_amount && finalSub >= adminData.cartRules.min_amount) {
-                if(adminData.cartRules.reward_type === 'free_shipping') isDeliveryFree = true;
+                if(adminData.cartRules.reward_type === 'free_shipping') isFreeShipping = true;
                 if(adminData.cartRules.reward_type === 'discount_pct') cartDisc = (finalSub * adminData.cartRules.discount_value / 100);
             }
 
             finalSub -= cartDisc;
             let totalDiscAmount = productDiscounts + cartDisc;
 
-            // Check Coupon
+            // Coupon
             let couponDisc = 0;
             if(appliedCoupon && adminData.coupons[appliedCoupon]) {
                 couponDisc = (finalSub * adminData.coupons[appliedCoupon].percent / 100);
             }
 
-            let deliveryCharge = isDeliveryFree ? 0 : (adminData.payment.deliveryCharge || 110);
+            let deliveryCharge = isFreeShipping ? 0 : Number(adminData.payment.deliveryCharge || 110);
             let grandTotal = Math.round(finalSub - couponDisc + deliveryCharge);
 
-            // Update UI Totals
+            // Update Totals UI
             document.getElementById('txt-subtotal').innerText = `৳ ${baseSubtotal}`;
-            document.getElementById('txt-delivery').innerText = deliveryCharge === 0 ? 'ফ্রি' : `৳ ${deliveryCharge}`;
+            document.getElementById('txt-delivery').innerText = deliveryCharge === 0 ? 'ফ্রি ডেলিভারি' : `৳ ${deliveryCharge}`;
             document.getElementById('txt-total').innerText = `৳ ${grandTotal}`;
             
             if(totalDiscAmount > 0) { document.getElementById('row-discount').style.display='flex'; document.getElementById('txt-discount').innerText = `- ৳ ${Math.round(totalDiscAmount)}`; } else document.getElementById('row-discount').style.display='none';
             if(couponDisc > 0) { document.getElementById('row-coupon').style.display='flex'; document.getElementById('txt-coupon').innerText = `- ৳ ${Math.round(couponDisc)}`; } else document.getElementById('row-coupon').style.display='none';
 
-            // Update Payment UI
-            document.getElementById('lbl-adv').innerText = `শুধু ডেলিভারি চার্জ (৳ ${deliveryCharge}) পেমেন্ট করুন`;
-            document.getElementById('lbl-full').innerText = `সম্পূর্ণ টাকা (৳ ${grandTotal}) পেমেন্ট করুন`;
-            
-            const payType = document.querySelector('input[name="payType"]:checked').value;
-            const amtToPay = payType === 'full' ? grandTotal : deliveryCharge;
-            const method = document.querySelector('.payment-method.active').dataset.method;
-            const num = method === 'bKash' ? adminData.payment.bkash : adminData.payment.nagad;
-
-            document.getElementById('pay-instructions').innerHTML = `<p>${method} নম্বরে <strong>৳ ${amtToPay}</strong> সেন্ড মানি করুন: <br><strong style="font-size:1.2rem; color:var(--primary-color);">${num || 'Set in admin'}</strong></p>`;
+            generatePaymentOptions(isCodEnabled, deliveryCharge, grandTotal);
         };
 
-        // UI Listeners
-        document.querySelectorAll('input[name="payType"]').forEach(r => r.onchange = calculateTotals);
-        document.querySelectorAll('.payment-method').forEach(m => m.onclick = () => { document.querySelectorAll('.payment-method').forEach(x=>x.classList.remove('active')); m.classList.add('active'); calculateTotals(); });
-        
+        const generatePaymentOptions = (isCodEnabled, deliveryCharge, grandTotal) => {
+            const container = document.getElementById('payment-options-container');
+            
+            // Check existing selection to persist it, otherwise default
+            let currentSelected = document.querySelector('input[name="payType"]:checked')?.value;
+            if (!currentSelected || (currentSelected === 'cod' && !isCodEnabled)) {
+                currentSelected = isCodEnabled ? 'cod' : 'advance';
+            }
+
+            let html = '';
+
+            if (isCodEnabled) {
+                html += `
+                    <div class="option ${currentSelected === 'cod' ? 'active' : ''}" data-type="cod">
+                        <label>
+                            <input type="radio" name="payType" value="cod" ${currentSelected === 'cod' ? 'checked' : ''} style="display:none;">
+                            <strong>ক্যাশ অন ডেলিভারি (COD)</strong>
+                            <span>অগ্রিম কোনো পেমেন্ট করতে হবে না। প্রোডাক্ট হাতে পেয়ে ৳ ${grandTotal} ডেলিভারি ম্যানকে দিন।</span>
+                        </label>
+                    </div>`;
+            } else {
+                html += `
+                    <div class="option ${currentSelected === 'advance' ? 'active' : ''}" data-type="advance">
+                        <label>
+                            <input type="radio" name="payType" value="advance" ${currentSelected === 'advance' ? 'checked' : ''} style="display:none;">
+                            <strong>ডেলিভারি চার্জ পেমেন্ট করুন</strong>
+                            <span>অর্ডার কনফার্ম করতে শুধু ডেলিভারি চার্জ ৳ ${deliveryCharge} পেমেন্ট করুন।</span>
+                        </label>
+                    </div>`;
+            }
+
+            html += `
+                <div class="option ${currentSelected === 'full' ? 'active' : ''}" data-type="full">
+                    <label>
+                        <input type="radio" name="payType" value="full" ${currentSelected === 'full' ? 'checked' : ''} style="display:none;">
+                        <strong>সম্পূর্ণ পেমেন্ট করুন</strong>
+                        <span>মোট ৳ ${grandTotal} এখনই পেমেন্ট করে দিন।</span>
+                    </label>
+                </div>`;
+
+            container.innerHTML = html;
+
+            // Attach Listeners to dynamic boxes
+            document.querySelectorAll('.payment-option-selector .option').forEach(box => {
+                box.onclick = function() {
+                    document.querySelectorAll('.payment-option-selector .option').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    this.querySelector('input').checked = true;
+                    handlePaymentModuleDisplay(deliveryCharge, grandTotal);
+                };
+            });
+
+            handlePaymentModuleDisplay(deliveryCharge, grandTotal);
+        };
+
+        const handlePaymentModuleDisplay = (deliveryCharge, grandTotal) => {
+            const payType = document.querySelector('input[name="payType"]:checked').value;
+            const payModule = document.getElementById('payment-module');
+            const trxIdInput = document.getElementById('trx-id');
+
+            if (payType === 'cod') {
+                payModule.style.display = 'none';
+                trxIdInput.removeAttribute('required');
+            } else {
+                payModule.style.display = 'block';
+                trxIdInput.setAttribute('required', 'true');
+                
+                const amtToPay = payType === 'full' ? grandTotal : deliveryCharge;
+                const method = document.querySelector('.payment-method.active').dataset.method;
+                const num = method.toLowerCase() === 'bkash' ? adminData.payment.bkash : adminData.payment.nagad;
+                
+                document.getElementById('pay-instructions').innerHTML = `
+                    <p>নিচের ${method} নম্বরে <strong>৳ ${amtToPay}</strong> সেন্ড মানি করুন:</p>
+                    <div style="margin-top:10px;">
+                        <strong style="font-size:1.4rem; color:var(--primary-color); letter-spacing:1px;">${num || 'Set in admin'}</strong>
+                    </div>`;
+            }
+        };
+
+        // Coupon Button Listener
         document.getElementById('apply-coupon-btn').onclick = () => {
             const code = document.getElementById('coupon-input').value.toUpperCase().trim();
             const msg = document.getElementById('coupon-msg');
-            if(adminData.coupons[code]) { appliedCoupon = code; msg.innerText = "কুপন যুক্ত হয়েছে!"; msg.style.color="green"; calculateTotals(); }
-            else { appliedCoupon = null; msg.innerText = "ভুল কুপন কোড!"; msg.style.color="red"; calculateTotals(); }
+            if(adminData.coupons[code]) { 
+                appliedCoupon = code; 
+                msg.innerText = "কুপন সফলভাবে যুক্ত হয়েছে!"; 
+                msg.style.color="var(--success-color)"; 
+                calculateTotals(); 
+            } else { 
+                appliedCoupon = null; 
+                msg.innerText = "ভুল কুপন কোড!"; 
+                msg.style.color="var(--danger-color)"; 
+                calculateTotals(); 
+            }
         };
 
+        // Payment Method Logo Click Listener
+        document.querySelectorAll('.payment-method').forEach(m => m.onclick = () => { 
+            document.querySelectorAll('.payment-method').forEach(x=>x.classList.remove('active')); 
+            m.classList.add('active'); 
+            calculateTotals(); 
+        });
+
+        // Submit Order
         document.getElementById('submit-order').onclick = async () => {
             const btn = document.getElementById('submit-order');
-            if(!document.getElementById('c-name').value || !document.getElementById('trx-id').value) return alert("সব তথ্য দিন!");
-            btn.innerText = "অপেক্ষা করুন..."; btn.disabled = true;
+            
+            // Validation
+            const name = document.getElementById('c-name').value.trim();
+            const phone = document.getElementById('c-phone').value.trim();
+            const address = document.getElementById('c-address').value.trim();
+            const dist = document.getElementById('c-district').value;
+            const payType = document.querySelector('input[name="payType"]:checked').value;
+            const trxId = document.getElementById('trx-id').value.trim();
 
+            if(!name || !phone || !address || !dist) return alert("দয়া করে আপনার ডেলিভারি ঠিকানার সকল তথ্য দিন।");
+            if(payType !== 'cod' && !trxId) return alert("দয়া করে Transaction ID (TrxID) দিন।");
+
+            // Loader
+            btn.innerText = "ভেরিফাই হচ্ছে... দয়া করে অপেক্ষা করুন"; 
+            btn.disabled = true;
+
+            // Final Calculations to save into Firebase
+            const deliveryCharge = document.getElementById('txt-delivery').innerText === 'ফ্রি ডেলিভারি' ? 0 : Number(document.getElementById('txt-delivery').innerText.replace('৳ ', ''));
+            const subtotal = Number(document.getElementById('txt-subtotal').innerText.replace('৳ ', ''));
+            const grandTotal = Number(document.getElementById('txt-total').innerText.replace('৳ ', ''));
+            
+            let advancePaid = 0; let dueAmount = 0;
+            if(payType === 'cod') { advancePaid = 0; dueAmount = grandTotal; }
+            else if(payType === 'advance') { advancePaid = deliveryCharge; dueAmount = grandTotal - deliveryCharge; }
+            else if(payType === 'full') { advancePaid = grandTotal; dueAmount = 0; }
+
+            const user = auth.currentUser;
             const orderData = {
-                userId: auth.currentUser ? auth.currentUser.uid : null,
-                customer: { name: document.getElementById('c-name').value, phone: document.getElementById('c-phone').value, address: document.getElementById('c-address').value },
-                payment: { method: document.querySelector('.payment-method.active').dataset.method, trxId: document.getElementById('trx-id').value, type: document.querySelector('input[name="payType"]:checked').value },
-                items: cart, status: 'Pending', date: new Date().toISOString()
+                userId: user ? user.uid : 'guest',
+                date: new Date().toISOString(),
+                status: 'Pending',
+                customer: { name, phone, address, district: dist },
+                items: cart.map(i => ({
+                    id: i.id,
+                    title: i.title,
+                    variant: i.variants && i.selectedVariantKey ? i.variants[i.selectedVariantKey].name : 'Standard',
+                    qty: i.quantity,
+                    price: i.variants && i.selectedVariantKey ? i.variants[i.selectedVariantKey].price : i.price,
+                    image: i.imageUrl
+                })),
+                financials: { subtotal, deliveryCharge, total: grandTotal, advancePaid, dueAmount },
+                paymentInfo: {
+                    type: payType,
+                    method: payType === 'cod' ? 'Cash on Delivery' : document.querySelector('.payment-method.active').dataset.method,
+                    trxId: payType === 'cod' ? 'N/A' : trxId
+                }
             };
-            await set(push(ref(db, 'orders')), orderData);
-            localStorage.removeItem('shoppingCart');
-            document.getElementById('checkout-view').style.display = 'none';
-            document.getElementById('success-view').style.display = 'block';
+
+            try {
+                await set(push(ref(db, 'orders')), orderData);
+                localStorage.removeItem('shoppingCart');
+                
+                // Clear UI and update Home Cart Counter by accessing parent window if in iframe
+                if(window.parent && window.parent.updateCartUI) window.parent.updateCartUI();
+                
+                document.getElementById('checkout-view').style.display = 'none';
+                document.getElementById('success-view').style.display = 'block';
+            } catch (error) {
+                alert("অর্ডার করা যায়নি। আবার চেষ্টা করুন।");
+                btn.innerText = "অর্ডার কনফার্ম করুন";
+                btn.disabled = false;
+            }
         };
     </script>
 </body>
