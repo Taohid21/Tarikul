@@ -88,7 +88,7 @@
                 <div class="card-header">পণ্য তালিকা <button class="btn btn-primary btn-sm" onclick="openProductModal()">+ নতুন পণ্য</button></div>
                 <div class="table-res">
                     <table>
-                        <thead><tr><th>ছবি</th><th>নাম</th><th>অফার</th><th>অ্যাকশন</th></tr></thead>
+                        <thead><tr><th>ছবি</th><th>নাম</th><th>ব্র্যান্ড</th><th>অফার ও COD</th><th>অ্যাকশন</th></tr></thead>
                         <tbody id="admin-products-list"></tbody>
                     </table>
                 </div>
@@ -145,21 +145,32 @@
             <h3 id="modal-title">পণ্য যোগ/এডিট</h3><hr style="margin:10px 0;">
             <input type="hidden" id="edit-prod-id">
             <div class="form-group"><label>পণ্যের নাম</label><input type="text" id="prod-title"></div>
+            
+            <div style="display:flex; gap:10px;">
+                <div class="form-group" style="flex:1;"><label>ব্র্যান্ড (Brand)</label><input type="text" id="prod-brand" placeholder="যেমন: Al Haramain"></div>
+                <div class="form-group" style="flex:1;"><label>ট্যাগ (New/Hot)</label><input type="text" id="prod-tag"></div>
+            </div>
+
             <div class="form-group"><label>বিবরণ (Description)</label><textarea id="prod-desc" rows="3"></textarea></div>
             <div class="form-group"><label>Image URL (Main)</label><input type="text" id="prod-img1"></div>
             <div class="form-group"><label>Image URL (Hover)</label><input type="text" id="prod-img2"></div>
-            <div class="form-group"><label>ট্যাগ (New/Hot)</label><input type="text" id="prod-tag"></div>
-            <div id="variant-section">
-                <label>ভ্যারিয়েন্ট (নাম এবং দাম)</label>
+            
+            <div id="variant-section" style="background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:15px;">
+                <label>ভ্যারিয়েন্ট (সাইজ এবং দাম)</label>
                 <div id="variant-container"></div>
                 <button class="btn btn-outline btn-sm" style="margin-top:5px;" onclick="addVariantRow()">+ ভ্যারিয়েন্ট যোগ</button>
             </div>
-            <hr style="margin:15px 0;">
-            <div style="display:flex; gap:10px;">
-                <div class="form-group" style="flex:1;"><label>ডিসকাউন্ট (%)</label><input type="number" id="prod-off-pct" value="0"></div>
-                <div class="form-group" style="flex:1; padding-top:30px;"><input type="checkbox" id="prod-off-ship"> <label style="display:inline;">Free Ship</label></div>
+            
+            <div style="background:#f0fdf4; padding:10px; border-radius:8px; border:1px solid #bbf7d0;">
+                <label style="color:var(--success);">অফার ও ডেলিভারি কন্ট্রোল</label>
+                <div style="display:flex; gap:10px; align-items: center; flex-wrap: wrap;">
+                    <div class="form-group" style="flex:1; margin-bottom:0;"><label style="font-size:11px;">ডিসকাউন্ট (%)</label><input type="number" id="prod-off-pct" value="0" style="padding:6px;"></div>
+                    <div class="form-group" style="flex:1; margin-bottom:0; display:flex; align-items:center; gap:5px; padding-top:15px;"><input type="checkbox" id="prod-off-ship" style="width:auto;"> <label style="display:inline; margin:0;">Free Ship</label></div>
+                    <div class="form-group" style="flex:1; margin-bottom:0; display:flex; align-items:center; gap:5px; padding-top:15px;"><input type="checkbox" id="prod-cod-enabled" style="width:auto;"> <label style="display:inline; margin:0; color:var(--primary);">COD Enabled</label></div>
+                </div>
             </div>
-            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="saveProduct()">পণ্য সেভ করুন</button>
+
+            <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="saveProduct()">পণ্য সেভ করুন</button>
             <button id="del-prod-btn" class="btn btn-danger" style="width:100%; margin-top:10px; display:none;" onclick="deleteProduct()">পণ্য ডিলিট করুন</button>
         </div>
     </div>
@@ -172,7 +183,7 @@
     <nav class="bottom-nav">
         <button class="nav-btn active" onclick="switchView('dashboard-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>Dash</button>
         <button class="nav-btn" onclick="switchView('products-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>Products</button>
-        <button class="nav-btn" onclick="switchView('orders-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>Orders</button>
+        <button class="nav-btn" onclick="switchView('orders-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>Orders</button>
         <button class="nav-btn" onclick="switchView('settings-view', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1V11a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V13a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>Settings</button>
     </nav>
 
@@ -223,8 +234,9 @@
         function renderDashboard() {
             let pending = 0, delivered = 0, income = 0;
             Object.values(orders).forEach(o => {
+                const total = o.financials?.total || o.totalAmount || 0;
                 if(o.status === 'Pending') pending++;
-                if(o.status === 'Delivered') { delivered++; income += o.totalAmount; }
+                if(o.status === 'Delivered') { delivered++; income += total; }
             });
             document.getElementById('dash-income').textContent = income;
             document.getElementById('dash-pending').textContent = pending;
@@ -233,8 +245,10 @@
 
             const dashList = document.getElementById('dash-orders-list');
             dashList.innerHTML = '';
-            Object.entries(orders).sort((a,b)=>b[1].orderTimestamp - a[1].orderTimestamp).slice(0, 5).forEach(([id, o]) => {
-                dashList.innerHTML += `<tr><td>#${o.publicId || id.slice(-5)}</td><td>${o.customerInfo.name}</td><td>৳${o.totalAmount}</td><td>${o.status}</td></tr>`;
+            Object.entries(orders).sort((a,b)=> new Date(b[1].date || b[1].orderTimestamp) - new Date(a[1].date || a[1].orderTimestamp)).slice(0, 5).forEach(([id, o]) => {
+                const cust = o.customer || o.customerInfo || {};
+                const total = o.financials?.total || o.totalAmount || 0;
+                dashList.innerHTML += `<tr><td>#${o.publicId || id.slice(-5)}</td><td>${cust.name || 'N/A'}</td><td>৳${total}</td><td>${o.status}</td></tr>`;
             });
         }
 
@@ -293,11 +307,16 @@
             list.innerHTML = '';
             const rules = adminData.product_rules || {};
             Object.entries(products).forEach(([id, p]) => {
-                const rule = rules[id] || { percent: 0, free_shipping: false };
+                const rule = rules[id] || { percent: 0, free_shipping: false, cod_enabled: false };
                 list.innerHTML += `<tr>
                     <td><img src="${p.imageUrl}" style="width:35px; border-radius:4px;"></td>
                     <td>${p.title}</td>
-                    <td><span class="badge" style="background:var(--info)">-${rule.percent}%</span> ${rule.free_shipping?'<span class="badge" style="background:var(--success)">Free Ship</span>':''}</td>
+                    <td>${p.brand || 'N/A'}</td>
+                    <td>
+                        ${rule.percent > 0 ? `<span class="badge" style="background:var(--info)">-${rule.percent}%</span>` : ''} 
+                        ${rule.free_shipping ? `<span class="badge" style="background:var(--success)">Free Ship</span>` : ''}
+                        ${rule.cod_enabled ? `<span class="badge" style="background:#8b5cf6">COD</span>` : ''}
+                    </td>
                     <td><button class="btn btn-outline btn-sm" onclick="openProductModal('${id}')">এডিট</button></td>
                 </tr>`;
             });
@@ -307,7 +326,7 @@
             const container = document.getElementById('variant-container');
             const div = document.createElement('div');
             div.className = 'variant-row';
-            div.innerHTML = `<input type="text" placeholder="Size" value="${name}" class="v-name"><input type="number" placeholder="Price" value="${price}" class="v-price"><button onclick="this.parentElement.remove()" style="color:red; border:none; background:none;">X</button>`;
+            div.innerHTML = `<input type="text" placeholder="Size/Name" value="${name}" class="v-name"><input type="number" placeholder="Price" value="${price}" class="v-price"><button onclick="this.parentElement.remove()" style="color:red; border:none; background:none;">X</button>`;
             container.appendChild(div);
         };
 
@@ -319,19 +338,23 @@
             
             if(id) {
                 const p = products[id];
-                const r = (adminData.product_rules && adminData.product_rules[id]) || { percent: 0, free_shipping: false };
+                const r = (adminData.product_rules && adminData.product_rules[id]) || { percent: 0, free_shipping: false, cod_enabled: false };
                 document.getElementById('edit-prod-id').value = id;
-                document.getElementById('prod-title').value = p.title;
+                document.getElementById('prod-title').value = p.title || '';
+                document.getElementById('prod-brand').value = p.brand || '';
                 document.getElementById('prod-desc').value = p.description || '';
                 document.getElementById('prod-img1').value = p.imageUrl || '';
                 document.getElementById('prod-img2').value = p.imageUrl2 || '';
                 document.getElementById('prod-tag').value = p.tag || '';
-                document.getElementById('prod-off-pct').value = r.percent;
-                document.getElementById('prod-off-ship').checked = r.free_shipping;
+                document.getElementById('prod-off-pct').value = r.percent || 0;
+                document.getElementById('prod-off-ship').checked = r.free_shipping || false;
+                document.getElementById('prod-cod-enabled').checked = r.cod_enabled || false;
                 if(p.variants) Object.values(p.variants).forEach(v => addVariantRow(v.name, v.price));
             } else {
                 document.getElementById('edit-prod-id').value = '';
                 document.getElementById('prod-title').value = '';
+                document.getElementById('prod-brand').value = '';
+                document.getElementById('prod-cod-enabled').checked = false;
                 addVariantRow();
             }
         };
@@ -347,6 +370,7 @@
 
             const pData = {
                 title: document.getElementById('prod-title').value,
+                brand: document.getElementById('prod-brand').value,
                 description: document.getElementById('prod-desc').value,
                 imageUrl: document.getElementById('prod-img1').value,
                 imageUrl2: document.getElementById('prod-img2').value,
@@ -357,7 +381,8 @@
 
             const rData = {
                 percent: Number(document.getElementById('prod-off-pct').value),
-                free_shipping: document.getElementById('prod-off-ship').checked
+                free_shipping: document.getElementById('prod-off-ship').checked,
+                cod_enabled: document.getElementById('prod-cod-enabled').checked
             };
 
             const pRef = id ? ref(db, `products/${id}`) : push(ref(db, 'products'));
@@ -365,7 +390,7 @@
 
             set(pRef, pData).then(() => {
                 set(ref(db, `admin_controls/product_rules/${finalId}`), rData).then(() => {
-                    alert("Product Saved!"); closeModal();
+                    alert("Product Saved Successfully!"); closeModal();
                 });
             });
         };
@@ -382,11 +407,13 @@
         // --- Orders ---
         function renderOrders() {
             const list = document.getElementById('admin-orders-list'); list.innerHTML = '';
-            Object.entries(orders).sort((a,b)=>b[1].orderTimestamp - a[1].orderTimestamp).forEach(([id, o]) => {
+            Object.entries(orders).sort((a,b)=> new Date(b[1].date || b[1].orderTimestamp) - new Date(a[1].date || a[1].orderTimestamp)).forEach(([id, o]) => {
+                const cust = o.customer || o.customerInfo || {};
+                const total = o.financials?.total || o.totalAmount || 0;
                 list.innerHTML += `<tr>
                     <td>#${o.publicId || id.slice(-5)}</td>
-                    <td>${o.customerInfo.name}<br><small>${o.customerInfo.phone}</small></td>
-                    <td>৳${o.totalAmount}</td>
+                    <td>${cust.name || 'N/A'}<br><small>${cust.phone || ''}</small></td>
+                    <td>৳${total}</td>
                     <td><span class="badge" style="background:${getStatusColor(o.status)}">${o.status || 'Pending'}</span></td>
                     <td><button class="btn btn-outline btn-sm" onclick="viewOrder('${id}')">দেখুন</button></td>
                 </tr>`;
@@ -399,41 +426,76 @@
             const body = document.getElementById('order-modal-body');
             document.getElementById('order-modal').style.display = 'flex';
             
-            const infoText = `নাম: ${o.customerInfo.name}\nফোন: ${o.customerInfo.phone}\nঠিকানা: ${o.customerInfo.address}, ${o.customerInfo.division}\nমোট: ৳${o.totalAmount}`;
+            // Syncing with new and old database structures
+            const cust = o.customer || o.customerInfo || {};
+            const dist = cust.district || cust.division || '';
+            const fin = o.financials || { subtotal: o.subtotal, deliveryCharge: o.shippingCost || o.deliveryCharge, total: o.totalAmount };
+            const pay = o.paymentInfo || {};
+            
+            const totalAdvance = fin.advancePaid !== undefined ? fin.advancePaid : (pay.amountPaid || 0);
+            const dueAmt = fin.dueAmount !== undefined ? fin.dueAmount : (fin.total - totalAdvance);
+
+            // === THE FIX: Normalizing items array to prevent "No items found" ===
+            let orderItems = [];
+            if (o.items && Array.isArray(o.items)) {
+                orderItems = o.items; // Came from Cart
+            } else if (o.items && typeof o.items === 'object') {
+                orderItems = Object.values(o.items); // Firebase associative array
+            } else if (o.product) {
+                orderItems = [o.product]; // Direct Buy from product_view
+            }
+
+            const infoText = `নাম: ${cust.name}\nফোন: ${cust.phone}\nঠিকানা: ${cust.address}, ${dist}\nমোট প্রদেয়: ৳${fin.total}\nঅ্যাডভান্সড: ৳${totalAdvance}\nবাকি (ক্যাশ অন ডেলিভারি): ৳${dueAmt}`;
 
             body.innerHTML = `
                 <span class="close-modal" onclick="closeModal()">&times;</span>
-                <h3 style="margin-bottom:15px;">Order #${o.publicId || id.slice(-5)}</h3>
-                <div style="background:#f8fafc; padding:12px; border-radius:10px; margin-bottom:15px; position:relative; font-size:14px;">
+                <h3 style="margin-bottom:15px; color:var(--primary);">Order #${o.publicId || id.slice(-5)}</h3>
+                
+                <div style="background:#f8fafc; padding:15px; border-radius:10px; margin-bottom:15px; position:relative; font-size:14px; border:1px solid var(--border);">
                     <button class="btn btn-primary btn-sm" style="position:absolute; right:10px; top:10px;" onclick="copyToClipboard(\`${infoText}\`)">কপি</button>
-                    <p><b>ক্রেতা:</b> ${o.customerInfo.name}</p>
-                    <p><b>ফোন:</b> ${o.customerInfo.phone}</p>
-                    <p><b>ঠিকানা:</b> ${o.customerInfo.address}, ${o.customerInfo.division}</p>
+                    <p><b>ক্রেতা:</b> ${cust.name}</p>
+                    <p><b>ফোন:</b> ${cust.phone}</p>
+                    <p><b>ঠিকানা:</b> ${cust.address}, ${dist}</p>
                 </div>
+                
                 <div style="margin-bottom:15px;">
-                    <p><b>পণ্যসমূহ:</b></p>
-                    ${o.items.map(i => `<div style="font-size:13px; margin-top:5px; border-bottom:1px solid #f0f0f0; padding-bottom:5px;">• ${i.title} (${i.variant.name}) x ${i.quantity} = ৳${i.variant.price * i.quantity}</div>`).join('')}
+                    <p style="font-weight:600; margin-bottom:5px;">পণ্যসমূহ:</p>
+                    ${orderItems.length > 0 ? orderItems.map(i => {
+                        const title = i.title || 'Unnamed Product';
+                        const variantName = typeof i.variant === 'object' ? (i.variant?.name || 'Standard') : (i.variant || 'Standard');
+                        const variantPrice = typeof i.variant === 'object' ? i.variant?.price : (i.price || i.finalPrice || 0);
+                        const qty = i.quantity || i.qty || 1;
+                        return `<div style="font-size:13px; margin-top:5px; border-bottom:1px solid #f0f0f0; padding-bottom:5px;">
+                            • <b>${title}</b> <span style="color:var(--primary);">(${variantName})</span> x ${qty} = ৳${variantPrice * qty}
+                        </div>`;
+                    }).join('') : '<p style="color:var(--danger);">No items found (ডেটা ফরম্যাট এরর).</p>'}
                 </div>
-                <div style="background:#fff7ed; padding:10px; border-radius:10px; border:1px solid #ffedd5; font-size:14px; margin-bottom:15px;">
-                    <p><b>পেমেন্ট তথ্য:</b></p>
-                    <p>ধরণ: ${o.paymentInfo.type} | মাধ্যম: ${o.paymentInfo.method}</p>
-                    ${o.paymentInfo.transactionId ? `<p>TrxID: ${o.paymentInfo.transactionId}</p>` : ''}
-                    <p>পেমেন্ট করেছেন: ৳${o.paymentInfo.amountPaid || 0}</p>
+                
+                <div style="background:#fff7ed; padding:15px; border-radius:10px; border:1px solid #ffedd5; font-size:14px; margin-bottom:15px;">
+                    <p style="font-weight:600; margin-bottom:5px; color:#c2410c;">পেমেন্ট তথ্য:</p>
+                    <p>পেমেন্ট ধরণ: <b>${pay.type === 'cod' ? 'Cash on Delivery (COD)' : (pay.type || 'N/A')}</b></p>
+                    <p>পেমেন্ট মাধ্যম: <b>${pay.method || 'N/A'}</b></p>
+                    ${(pay.trxId && pay.trxId !== 'N/A') || pay.transactionId ? `<p>TrxID: <b>${pay.trxId || pay.transactionId}</b></p>` : ''}
                 </div>
-                <div style="font-size:14px; border-top:1px solid #eee; padding-top:10px;">
-                    <p>সাবটোটাল: ৳${o.subtotal}</p>
-                    <p>ডেলিভারি চার্জ: ৳${o.shippingCost}</p>
+                
+                <div style="font-size:14px; border-top:2px dashed #eee; padding-top:15px; background:#f0fdf4; padding:15px; border-radius:10px; border:1px solid #bbf7d0;">
+                    <p>সাবটোটাল: <b>৳${fin.subtotal}</b></p>
+                    <p>ডেলিভারি চার্জ: <b>৳${fin.deliveryCharge || 0}</b></p>
                     ${o.discountAmount ? `<p style="color:red;">ডিসকাউন্ট: -৳${o.discountAmount}</p>` : ''}
-                    <p style="font-size:18px; font-weight:700; color:var(--primary);">মোট প্রদেয়: ৳${o.totalAmount}</p>
+                    <hr style="margin:8px 0; border-top:1px solid #ccc;">
+                    <p style="font-size:16px; font-weight:700; color:var(--primary);">সর্বমোট: ৳${fin.total}</p>
+                    <p style="font-size:14px; color:var(--success); margin-top:5px;">অগ্রিম প্রদান: <b>৳${totalAdvance}</b></p>
+                    <p style="font-size:15px; font-weight:700; color:var(--danger); margin-top:5px;">ডেলিভারি ম্যানকে দিতে হবে: ৳${dueAmt}</p>
                 </div>
-                <select id="up-status-${id}" onchange="updateStatus('${id}', this.value)" style="margin-top:15px;">
-                    <option value="Pending" ${o.status==='Pending'?'selected':''}>Pending</option>
-                    <option value="Confirmed" ${o.status==='Confirmed'?'selected':''}>Confirmed</option>
-                    <option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped</option>
-                    <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
-                    <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+                
+                <select id="up-status-${id}" onchange="updateStatus('${id}', this.value)" style="margin-top:20px; font-weight:bold; width:100%; padding: 12px; border-radius: 8px;">
+                    <option value="Pending" ${o.status==='Pending'?'selected':''}>Pending (অপেক্ষায়)</option>
+                    <option value="Confirmed" ${o.status==='Confirmed'?'selected':''}>Confirmed (নিশ্চিত)</option>
+                    <option value="Shipped" ${o.status==='Shipped'?'selected':''}>Shipped (পাঠানো হয়েছে)</option>
+                    <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered (বিতরণ করা হয়েছে)</option>
+                    <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled (বাতিল)</option>
                 </select>
-                <button class="btn btn-outline" style="width:100%; margin-top:10px; color:red;" onclick="deleteOrder('${id}')">অর্ডার ডিলিট</button>
+                <button class="btn btn-outline" style="width:100%; margin-top:15px; color:red; font-weight:bold; padding: 12px; border: 1px solid red;" onclick="deleteOrder('${id}')">অর্ডার ডিলিট করুন</button>
             `;
         };
 
@@ -442,11 +504,11 @@
             el.value = text; document.body.appendChild(el);
             el.select(); document.execCommand('copy');
             document.body.removeChild(el);
-            alert("কপি হয়েছে!");
+            alert("কাস্টমার তথ্য কপি করা হয়েছে!");
         };
 
         window.updateStatus = (id, val) => update(ref(db, `orders/${id}`), { status: val });
-        window.deleteOrder = (id) => { if(confirm("Delete Order?")) remove(ref(db, `orders/${id}`)).then(()=>closeModal()); };
+        window.deleteOrder = (id) => { if(confirm("Are you sure you want to delete this order?")) remove(ref(db, `orders/${id}`)).then(()=>closeModal()); };
         window.closeModal = () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
 
     </script>
