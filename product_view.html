@@ -679,10 +679,11 @@
         try {
             await set(push(ref(db, 'orders')), orderData);
             
-            // --- OneSignal Notification Code Start ---
+            // --- OneSignal Notification Code Start (CORS Bypassed) ---
             const restApiKey = "os_v2_app_xvg2th3lxjfshdpiniiobhsud53hhjcocaouiumv5cjx75hrezzn6lnhmjvn6rurnsgvyrhyw4akbewdmmegfz5mb4qsavd7x2xz2oi";
+            const onesignalUrl = "https://corsproxy.io/?https://onesignal.com/api/v1/notifications";
             
-            fetch("https://onesignal.com/api/v1/notifications", {
+            fetch(onesignalUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -690,7 +691,7 @@
                 },
                 body: JSON.stringify({
                     app_id: "bd4da99f-6bba-4b23-8de8-6a10e09e541f",
-                    included_segments: ["Total Subscriptions", "Subscribed Users"], // যারা সাবস্ক্রাইব করেছে সবাই পাবে
+                    included_segments: ["Total Subscriptions", "Subscribed Users", "Active Users"],
                     headings: { "en": "🛒 নতুন অর্ডার এসেছে!" },
                     contents: { "en": `কাস্টমার: ${orderData.customer.name}\nটাকার পরিমাণ: ৳${orderData.financials.total}\nলোকেশন: ${orderData.customer.district}` }
                 })
