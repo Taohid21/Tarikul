@@ -121,6 +121,15 @@
         
         #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #2b3445; color: #fff; padding: 12px 25px; border-radius: 30px; font-size: 13px; font-weight: 600; z-index: 4000; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
     </style>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "bd4da99f-6bba-4b23-8de8-6a10e09e541f",
+    });
+  });
+</script>
 </head>
 <body>
 
