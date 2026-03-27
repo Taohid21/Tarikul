@@ -8,7 +8,7 @@
     <style>
         :root {
             --primary: #0f4c3a;
-            --accent: #d4af37; /* Gold accent for luxury */
+            --accent: #d4af37;
             --bg: #f8faf9;
             --text: #2b3445;
             --white: #ffffff;
@@ -19,7 +19,6 @@
 
         .contact-container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        /* Header Section */
         .hero-section {
             background: linear-gradient(rgba(15, 76, 58, 0.9), rgba(15, 76, 58, 0.9)), url('https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
             background-size: cover; background-position: center;
@@ -28,14 +27,12 @@
         .hero-section h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
         .hero-section p { font-size: 14px; opacity: 0.9; font-weight: 300; }
 
-        /* Description Section */
         .description-card {
             background: var(--white); padding: 25px; border-radius: 20px; margin-top: -30px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center;
         }
         .description-card p { font-size: 15px; color: #555; font-style: italic; }
 
-        /* Contact Info Cards */
         .info-grid { display: grid; gap: 15px; margin-top: 25px; }
         .info-card {
             background: var(--white); padding: 20px; border-radius: 15px;
@@ -51,7 +48,6 @@
         .info-card h3 { font-size: 14px; color: var(--primary); margin-bottom: 2px; }
         .info-card p { font-size: 13px; color: #777; }
 
-        /* Developer Section */
         .dev-section {
             margin-top: 40px; padding: 25px; background: #fff; border-radius: 20px;
             border: 1px solid #e3e9ef; position: relative; overflow: hidden;
@@ -71,7 +67,6 @@
             padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px;
         }
 
-        /* Socials */
         .social-links { display: flex; justify-content: center; gap: 15px; margin-top: 30px; padding-bottom: 30px;}
         .social-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
@@ -93,8 +88,8 @@
 
     <!-- Contact Options -->
     <div class="info-grid">
-        <!-- WhatsApp -->
-        <a href="https://wa.me/message/U76TXXKZVJQWK1" class="info-card">
+        <!-- WhatsApp (Direct App Link) -->
+        <a href="https://wa.me/message/U76TXXKZVJQWK1" target="_blank" rel="noopener noreferrer" class="info-card">
             <div class="icon-box">
                 <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.025 3.207l-.695 2.54 2.595-.682c.884.579 1.833.911 2.843.911 3.181 0 5.767-2.586 5.768-5.766 0-3.179-2.587-5.766-5.768-5.766zm3.326 8.204c-.145.411-.849.753-1.18.8-.329.047-.757.086-2.148-.474-1.782-.716-2.922-2.529-3.01-2.648-.09-.118-.737-.98-.737-1.87 0-.889.46-1.326.623-1.496.163-.17.354-.213.472-.213.118 0 .236 0 .34.005.114.004.263-.043.413.315.151.358.519 1.267.565 1.36.046.095.076.205.013.33-.062.126-.094.205-.188.315-.094.11-.198.246-.283.33-.094.094-.193.197-.084.382.109.185.485.801 1.039 1.294.713.635 1.314.832 1.5.923.186.09.296.076.405-.05.11-.127.472-.547.598-.736.126-.189.251-.158.423-.095.172.063 1.09.514 1.278.609.188.094.313.142.36.221.045.079.045.459-.1.87z"/></svg>
             </div>
@@ -104,8 +99,8 @@
             </div>
         </a>
 
-        <!-- Facebook -->
-        <a href="https://www.facebook.com/share/14ahtXKZHac/" class="info-card">
+        <!-- Facebook (Direct App Link) -->
+        <a href="https://www.facebook.com/share/14ahtXKZHac/" target="_blank" rel="noopener noreferrer" class="info-card">
             <div class="icon-box">
                 <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-10 4.5-10 10 0 4.97 3.64 9.1 8.44 9.85v-6.97h-2.53v-2.88h2.53v-2.2c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.88h-2.34v6.97c4.8-.75 8.44-4.88 8.44-9.85 0-5.5-4.5-10-10-10z"/></svg>
             </div>
@@ -116,7 +111,7 @@
         </a>
 
         <!-- Email -->
-        <a href="mailto:perfumeheaven2023@gmail.com" class="info-card">
+        <a href="mailto:perfumeheaven2023@gmail.com" target="_blank" class="info-card">
             <div class="icon-box">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             </div>
@@ -134,7 +129,8 @@
             <h2>Taohid Islam</h2>
             <p>Full Stack Developer | Bauphal, Patuakhali</p>
             <p style="margin-top:-10px; font-size: 12px; color: #888;">আপনার ব্যবসার জন্য যেকোনো ধরণের অ্যাপ বা ওয়েবসাইট তৈরি করতে আমার সাথে যোগাযোগ করতে পারেন।</p>
-            <a href="https://wa.me/8801704609401" class="btn-dev-wa">
+            <!-- Developer WA Link -->
+            <a href="https://wa.me/8801704609401" target="_blank" rel="noopener noreferrer" class="btn-dev-wa">
                 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.246 2.248 3.484 5.232 3.484 8.412-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.309 1.656zm6.29-4.143c1.589.943 3.12 1.411 4.75 1.412 5.457 0 9.896-4.438 9.899-9.896.002-5.457-4.437-9.897-9.895-9.897-5.459 0-9.898 4.438-9.901 9.896-.001 1.688.462 3.328 1.338 4.74l-.941 3.438 3.52-.924-.229.13z"/></svg>
                 Contact Developer
             </a>
