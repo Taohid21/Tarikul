@@ -168,6 +168,14 @@
 
     #order-success-message { display: none; text-align: center; padding: 60px 20px; }
     #order-success-message svg { width: 80px; color: var(--success-color); margin-bottom: 20px;}
+/* Coupon Styles */
+    .coupon-wrapper { display: flex; gap: 10px; margin-bottom: 20px; }
+    .coupon-input { flex: 1; padding: 10px 15px; border: 1px dashed var(--primary-color); border-radius: 8px; font-size: 1rem; text-transform: uppercase; font-family: var(--font-family-en); }
+    .coupon-btn { padding: 10px 20px; background: var(--secondary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    .coupon-btn:hover { background: var(--primary-color); }
+    .applied-coupon-box { display: none; background: #e0f8e9; border: 1px solid var(--success-color); padding: 10px 15px; border-radius: 8px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .applied-coupon-box.active { display: flex; }
+    .remove-coupon { color: var(--danger-color); cursor: pointer; font-weight: bold; font-size: 1.2rem; }
     
     /* Toast */
     #toast-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; text-align: center;}
@@ -283,6 +291,7 @@
                     <div class="totals-summary">
                         <h4>হিসাব</h4>
                         <p><span>প্রোডাক্ট প্রাইস:</span> <span id="summary-subtotal"></span></p>
+                        <p id="coupon-discount-row" style="display: none; color: var(--danger-color);"><span>কুপন ডিসকাউন্ট:</span> <strong id="summary-coupon-discount"></strong></p>
                         <p><span>ডেলিভারি চার্জ:</span> <strong id="summary-delivery" style="color: var(--success-color);"></strong></p>
                         <p class="grand-total"><span>সর্বমোট:</span> <span id="summary-total"></span></p>
                         <p style="color:var(--primary-color);"><span>অগ্রিম পেমেন্ট:</span> <strong id="summary-paid-now"></strong></p>
@@ -331,11 +340,39 @@
     
     let adminSettings = { deliveryCharge: 110, bkashNumber: "01798796479", nagadNumber: "01798796479" };
     let productRules = {}; 
+    let coupons = {};
+    let appliedCoupon = { code: '', percent: 0 };
+
+    window.applyCoupon = () => {
+        const code = document.getElementById('coupon-code-input').value.toUpperCase().trim();
+        if(!code) return showToast('কুপন কোড লিখুন', 'error');
+        if(coupons[code] && coupons[code].active !== false) {
+            appliedCoupon = { code: code, percent: Number(coupons[code].percent) };
+            document.getElementById('coupon-entry-box').style.display = 'none';
+            document.getElementById('applied-coupon-box').classList.add('active');
+            document.getElementById('display-coupon-code').textContent = code;
+            document.getElementById('display-coupon-pct').textContent = appliedCoupon.percent;
+            showToast('কুপন সফলভাবে অ্যাপ্লাই হয়েছে!');
+            populateReviewStep(); // Recalculate totals
+        } else {
+            showToast('ইনভ্যালিড বা মেয়াদোত্তীর্ণ কুপন কোড!', 'error');
+        }
+    };
+
+    window.removeCoupon = () => {
+        appliedCoupon = { code: '', percent: 0 };
+        document.getElementById('coupon-code-input').value = '';
+        document.getElementById('coupon-entry-box').style.display = 'flex';
+        document.getElementById('applied-coupon-box').classList.remove('active');
+        populateReviewStep(); // Recalculate totals
+        showToast('কুপন রিমুভ করা হয়েছে!', 'error');
+    };
 
     // Load Admin Controls
     onValue(ref(db, 'admin_controls'), (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
+            if (data.coupons) coupons = data.coupons;
             if (data.payment_settings) {
                 if(data.payment_settings.deliveryCharge) adminSettings.deliveryCharge = data.payment_settings.deliveryCharge;
                 if(data.payment_settings.bkash) adminSettings.bkashNumber = data.payment_settings.bkash;
@@ -602,20 +639,33 @@
 
     const populateReviewStep = () => {
         const isFree = productRules[currentProduct.id]?.free_shipping;
-        const discount = productRules[currentProduct.id]?.percent || 0;
+        const productDiscount = productRules[currentProduct.id]?.percent || 0;
         
         const base = Number(selectedVariant.price);
-        const finalItemPrice = Math.round(base - (base * discount / 100));
+        const finalItemPrice = Math.round(base - (base * productDiscount / 100));
         const qty = parseInt(document.getElementById('quantity').value) || 1;
+        
         const subtotal = finalItemPrice * qty;
+        
+        // Coupon Calculation
+        let couponDiscountAmt = 0;
+        if (appliedCoupon.percent > 0) {
+            couponDiscountAmt = Math.round(subtotal * (appliedCoupon.percent / 100));
+            document.getElementById('coupon-discount-row').style.display = 'flex';
+            document.getElementById('summary-coupon-discount').textContent = `-৳ ${couponDiscountAmt}`;
+        } else {
+            document.getElementById('coupon-discount-row').style.display = 'none';
+        }
+
+        const discountedSubtotal = subtotal - couponDiscountAmt;
         const deliveryCost = isFree ? 0 : adminSettings.deliveryCharge;
-        const total = subtotal + deliveryCost;
+        const total = discountedSubtotal + deliveryCost;
         
         const pType = document.querySelector('input[name="paymentOption"]:checked').value;
         
         let advance = 0; let due = 0;
         if(pType === 'cod') { advance = 0; due = total; }
-        else if(pType === 'advance') { advance = deliveryCost; due = subtotal; }
+        else if(pType === 'advance') { advance = deliveryCost; due = discountedSubtotal; }
         else if(pType === 'full') { advance = total; due = 0; }
 
         document.getElementById('review-name').textContent = document.getElementById('customer-name').value;
@@ -634,18 +684,28 @@
         btn.disabled = true; btn.textContent = 'প্রসেস হচ্ছে...';
         
         const isFree = productRules[currentProduct.id]?.free_shipping;
-        const discount = productRules[currentProduct.id]?.percent || 0;
+        const productDiscount = productRules[currentProduct.id]?.percent || 0;
         const base = Number(selectedVariant.price);
-        const finalItemPrice = Math.round(base - (base * discount / 100));
+        const finalItemPrice = Math.round(base - (base * productDiscount / 100));
         const qty = parseInt(document.getElementById('quantity').value) || 1;
+        
         const subtotal = finalItemPrice * qty;
+        
+        // Coupon Calculation
+        let couponDiscountAmt = 0;
+        if (appliedCoupon.percent > 0) {
+            couponDiscountAmt = Math.round(subtotal * (appliedCoupon.percent / 100));
+        }
+        
+        const discountedSubtotal = subtotal - couponDiscountAmt;
         const deliveryCost = isFree ? 0 : adminSettings.deliveryCharge;
-        const total = subtotal + deliveryCost;
+        const total = discountedSubtotal + deliveryCost;
+        
         const pType = document.querySelector('input[name="paymentOption"]:checked').value;
         
         let advance = 0; let due = 0;
         if(pType === 'cod') { advance = 0; due = total; }
-        else if(pType === 'advance') { advance = deliveryCost; due = subtotal; }
+        else if(pType === 'advance') { advance = deliveryCost; due = discountedSubtotal; }
         else if(pType === 'full') { advance = total; due = 0; }
 
         const user = auth.currentUser;
@@ -668,6 +728,8 @@
                 image: currentProduct.imageUrls ? currentProduct.imageUrls[0] : currentProduct.imageUrl
             },
             financials: { subtotal, deliveryCharge: deliveryCost, total, advancePaid: advance, dueAmount: due },
+            discountAmount: couponDiscountAmt > 0 ? couponDiscountAmt : null,
+            couponCode: appliedCoupon.code || null,
             paymentInfo: {
                 type: pType,
                 method: pType === 'cod' ? 'Cash on Delivery' : document.querySelector('.payment-method.active').dataset.method,
