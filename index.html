@@ -59,16 +59,24 @@
         .hero-banner img { width: 90px; opacity: 0.9; z-index: 2; transform: rotate(-10deg);}
         .hero-bg-shape { position: absolute; right: -20px; top: -20px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 1;}
 
-        /* Categories (Replaced Brands) */
+        /* Dynamic Brands Section */
         .section-title { padding: 20px 15px 15px; font-size: 18px; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: center;}
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 15px 15px; }
-        .category-card { 
-            background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 15px 5px; 
-            text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        
+        .category-grid { 
+            display: flex; overflow-x: auto; gap: 12px; padding: 0 15px 15px; 
+            scrollbar-width: none; /* Firefox */
         }
+        .category-grid::-webkit-scrollbar { display: none; } /* Chrome */
+        
+        .category-card { 
+            background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 10px; 
+            text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            min-width: 80px; flex-shrink: 0;
+        }
+        .category-card.active-brand { border-color: var(--primary); background: #eef5f3; }
         .category-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 5px 10px rgba(0,0,0,0.05);}
-        .category-icon { width: 35px; height: 35px; margin: 0 auto 8px; background: #eef5f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); }
-        .category-name { font-size: 11px; font-weight: 600; font-family: 'Poppins', sans-serif; color: var(--text);}
+        .category-icon { width: 35px; height: 35px; margin: 0 auto 8px; background: #eef5f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 14px; font-weight: bold; }
+        .category-name { font-size: 11px; font-weight: 600; font-family: 'Poppins', sans-serif; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
         /* Product Grid */
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px 15px; margin-bottom: 100px; }
@@ -104,6 +112,12 @@
         .cart-items-list { flex-grow: 1; overflow-y: auto; padding: 20px; background: #fff;}
         .cart-item { display: flex; gap: 12px; margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 15px; align-items: center; }
         .cart-footer { padding: 20px; border-top: 1px solid #eee; background: #fff;}
+
+        /* Cart Qty Buttons */
+        .qty-control { display: flex; align-items: center; background: #f0f2f5; border-radius: 6px; overflow: hidden;}
+        .qty-btn { width: 30px; height: 30px; background: none; border: none; font-size: 18px; font-weight: bold; cursor: pointer; color: var(--text); display: flex; justify-content: center; align-items: center;}
+        .qty-btn:active { background: #e3e9ef; }
+        .qty-text { width: 30px; text-align: center; font-size: 14px; font-weight: 600; font-family: 'Poppins', sans-serif;}
 
         #app-iframe-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 3000; display: none; transform: translateX(100%); transition: 0.3s; }
         #app-iframe-modal.active { display: block; transform: translateX(0); }
@@ -212,27 +226,16 @@
         <img src="https://cdn-icons-png.flaticon.com/512/3381/3381081.png" alt="Perfume">
     </div>
 
-    <!-- NEW: Featured Categories (Replaced Top Brands) -->
+    <!-- Dynamic Brands Section -->
     <div class="section-title">
-        <span>🌟 Categories</span>
+        <span>🌟 Top Brands</span>
     </div>
-    <div class="category-grid">
-        <div class="category-card" onclick="filterByCategory('Men')">
-            <div class="category-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></div>
-            <div class="category-name">Men</div>
-        </div>
-        <div class="category-card" onclick="filterByCategory('Women')">
-            <div class="category-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
-            <div class="category-name">Women</div>
-        </div>
-        <div class="category-card" onclick="filterByCategory('Unisex')">
-            <div class="category-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-            <div class="category-name">Unisex</div>
-        </div>
-        <div class="category-card" onclick="location.reload()">
-            <div class="category-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></div>
-            <div class="category-name">All</div>
-        </div>
+    <div class="category-grid" id="brand-grid">
+        <!-- Brands will be loaded here dynamically -->
+        <div class="category-card"><div class="skeleton" style="height:35px; width:35px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="height:10px; width:40px; margin:auto;"></div></div>
+        <div class="category-card"><div class="skeleton" style="height:35px; width:35px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="height:10px; width:40px; margin:auto;"></div></div>
+        <div class="category-card"><div class="skeleton" style="height:35px; width:35px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="height:10px; width:40px; margin:auto;"></div></div>
+        <div class="category-card"><div class="skeleton" style="height:35px; width:35px; border-radius:50%; margin:0 auto 8px;"></div><div class="skeleton" style="height:10px; width:40px; margin:auto;"></div></div>
     </div>
 
     <!-- Products Section -->
@@ -280,33 +283,63 @@
         onValue(ref(db, 'products'), snap => {
             if(snap.exists()) {
                 allProducts = Object.entries(snap.val()).map(([id, data]) => ({ id, ...data }));
+                renderBrands(); // ডাটাবেস থেকে ডাইনামিক ব্র্যান্ড তৈরি করা হবে
                 setTimeout(() => renderProducts(allProducts, 'product-grid'), 500);
             } else {
                 document.getElementById('product-grid').innerHTML = '<p style="text-align:center; width:100%; grid-column: 1 / -1; padding: 30px; color: #888;">কোনো প্রোডাক্ট পাওয়া যায়নি</p>';
+                document.getElementById('brand-grid').innerHTML = '';
             }
         });
 
-        // Simple Category Filter (Mockup logic if real categories are missing in DB)
-        window.filterByCategory = (cat) => {
-            if (cat === 'All') {
+        // --- Dynamic Brands Logic ---
+        function renderBrands() {
+            const brandGrid = document.getElementById('brand-grid');
+            
+            // ডাটাবেস থেকে সব ইউনিক ব্র্যান্ড কালেক্ট করা হচ্ছে (যাদের নাম দেয়া আছে)
+            const uniqueBrands = [...new Set(allProducts.map(p => p.brand).filter(b => b && b.trim() !== ''))];
+            
+            let html = `
+                <div class="category-card active-brand" id="brand-btn-All" onclick="filterByBrand('All')">
+                    <div class="category-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></div>
+                    <div class="category-name">ALL</div>
+                </div>
+            `;
+
+            uniqueBrands.forEach(brand => {
+                const initial = brand.charAt(0).toUpperCase();
+                html += `
+                    <div class="category-card" id="brand-btn-${brand.replace(/\s+/g, '-')}" onclick="filterByBrand('${brand}')">
+                        <div class="category-icon">${initial}</div>
+                        <div class="category-name">${brand}</div>
+                    </div>
+                `;
+            });
+            brandGrid.innerHTML = html;
+        }
+
+        window.filterByBrand = (brand) => {
+            // UI Update - Highlight Selected Brand
+            document.querySelectorAll('#brand-grid .category-card').forEach(el => el.classList.remove('active-brand'));
+            const safeId = brand === 'All' ? 'All' : brand.replace(/\s+/g, '-');
+            const activeBtn = document.getElementById(`brand-btn-${safeId}`);
+            if(activeBtn) activeBtn.classList.add('active-brand');
+
+            // Filter Products
+            if (brand === 'All') {
                 renderProducts(allProducts, 'product-grid');
             } else {
-                // Filters by category if it exists in DB, otherwise searches title
-                const filtered = allProducts.filter(p => 
-                    (p.category && p.category.toLowerCase().includes(cat.toLowerCase())) ||
-                    (p.title && p.title.toLowerCase().includes(cat.toLowerCase()))
-                );
+                const filtered = allProducts.filter(p => p.brand === brand);
                 renderProducts(filtered, 'product-grid');
             }
         };
 
-        // Render Logic
+        // Render Product Logic
         function renderProducts(products, targetId) {
             const grid = document.getElementById(targetId);
             grid.innerHTML = '';
             
             if (products.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; width:100%; grid-column: 1 / -1; padding: 30px; color: #888;">এই ক্যাটাগরিতে কোনো প্রোডাক্ট নেই</p>';
+                grid.innerHTML = '<p style="text-align:center; width:100%; grid-column: 1 / -1; padding: 30px; color: #888;">এই ব্র্যান্ডের কোনো প্রোডাক্ট নেই</p>';
                 return;
             }
 
@@ -331,8 +364,6 @@
 
                 const safeTitle = p.title ? p.title.replace(/'/g, "&apos;").replace(/"/g, "&quot;") : 'Unnamed Product';
                 const safeImg = p.imageUrl || 'https://via.placeholder.com/150';
-                
-                // FIXED: Only show brand if it exists in DB, otherwise leave blank
                 const brandNameHtml = (p.brand && p.brand.trim() !== "") ? `<div class="brand-name">${p.brand}</div>` : '';
 
                 const card = document.createElement('div');
@@ -417,11 +448,10 @@
             renderProducts(filtered, 'search-results-grid');
         });
 
-        // --- Cart Operations ---
+        // --- Cart Operations (+, -, Remove) ---
         window.addToCart = (id, title, img, price) => {
             let cart = JSON.parse(localStorage.getItem('shoppingCart') || '[]');
             const exists = cart.find(i => i.id === id);
-            
             const numPrice = parseFloat(price) || 0;
 
             if(exists) {
@@ -435,6 +465,26 @@
             showToast("ব্যাগ এ যুক্ত হয়েছে!");
         };
 
+        window.changeCartQty = (id, amount) => {
+            let cart = JSON.parse(localStorage.getItem('shoppingCart') || '[]');
+            let item = cart.find(i => i.id === id);
+            
+            if(item) {
+                item.quantity += amount;
+                if(item.quantity < 1) item.quantity = 1; // 1 এর নিচে নামতে দিবে না, ডিলিট করতে চাইলে রিমুভ বাটন
+                localStorage.setItem('shoppingCart', JSON.stringify(cart));
+                updateCartUI();
+            }
+        };
+
+        window.removeFromCart = (id) => {
+            let cart = JSON.parse(localStorage.getItem('shoppingCart') || '[]');
+            cart = cart.filter(i => i.id !== id);
+            localStorage.setItem('shoppingCart', JSON.stringify(cart));
+            updateCartUI();
+            showToast("প্রোডাক্ট রিমুভ করা হয়েছে!");
+        };
+
         function updateCartUI() {
             const cart = JSON.parse(localStorage.getItem('shoppingCart') || '[]');
             const list = document.getElementById('cart-items-list');
@@ -445,7 +495,7 @@
 
             if(cart.length === 0) {
                 badges.forEach(b => b.textContent = 0);
-                list.innerHTML = `<p style="text-align:center; padding:50px; opacity:0.5;">ব্যাগ খালি</p>`;
+                list.innerHTML = `<p style="text-align:center; padding:50px; opacity:0.5; font-size: 16px;">ব্যাগ খালি</p>`;
                 document.getElementById('cart-grand-total').textContent = '৳ 0';
                 return;
             }
@@ -460,10 +510,26 @@
 
                 list.innerHTML += `
                     <div class="cart-item">
-                        <img src="${item.imageUrl}" style="width:50px; height:50px; border-radius:8px; object-fit:cover; border:1px solid #eee;">
-                        <div style="flex-grow:1;">
-                            <div style="font-size:14px; font-weight:600; line-height:1.2; margin-bottom:5px;">${item.title}</div>
-                            <div style="color:var(--primary); font-weight:700;">৳${price} x ${qty}</div>
+                        <img src="${item.imageUrl}" style="width:70px; height:70px; border-radius:10px; object-fit:cover; border:1px solid #eee;">
+                        <div style="flex-grow:1; display:flex; flex-direction:column; gap:8px;">
+                            
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="font-size:14px; font-weight:600; line-height:1.2; padding-right:10px; color:var(--text);">${item.title}</div>
+                                <button onclick="removeFromCart('${item.id}')" style="background:none; border:none; color:var(--accent); cursor:pointer; padding:2px;">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                            
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div style="color:var(--primary); font-weight:700; font-family:'Poppins', sans-serif;">৳${price}</div>
+                                
+                                <div class="qty-control">
+                                    <button class="qty-btn" onclick="changeCartQty('${item.id}', -1)">-</button>
+                                    <span class="qty-text">${qty}</span>
+                                    <button class="qty-btn" onclick="changeCartQty('${item.id}', 1)">+</button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>`;
             });
