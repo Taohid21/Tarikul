@@ -282,6 +282,17 @@
 
                 <div class="form-step" id="step-3">
                     <h4>অর্ডারের সারাংশ</h4>
+                    
+                    <!-- Coupon Section -->
+                    <div id="coupon-entry-box" class="coupon-wrapper">
+                        <input type="text" id="coupon-code-input" class="coupon-input" placeholder="কুপন কোড (যদি থাকে)">
+                        <button type="button" class="coupon-btn" onclick="applyCoupon()">Apply</button>
+                    </div>
+                    <div id="applied-coupon-box" class="applied-coupon-box">
+                        <span style="color: var(--success-color); font-weight: 600;">✅ Coupon Applied: <span id="display-coupon-code"></span> (<span id="display-coupon-pct"></span>% OFF)</span>
+                        <span class="remove-coupon" onclick="removeCoupon()">×</span>
+                    </div>
+
                     <div class="order-review-summary">
                         <h4>ডেলিভারি ঠিকানা</h4>
                         <div class="review-item"><span>নাম:</span> <strong id="review-name"></strong></div>
