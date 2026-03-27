@@ -63,8 +63,25 @@
         .section-title { padding: 20px 15px 15px; font-size: 18px; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; align-items: center;}
         
         .category-grid { 
-            display: flex; overflow-x: auto; gap: 12px; padding: 0 15px 15px; 
-            scrollbar-width: none; /* Firefox */
+            display: none; /* শুরুতে লুকানো থাকবে */
+            flex-wrap: wrap; gap: 10px; padding: 10px 15px 15px; 
+            transition: all 0.3s ease;
+        }
+        .category-grid.show { display: flex; } /* ক্লিক করলে দেখাবে */
+        
+        .brand-toggle-btn {
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .category-grid::-webkit-scrollbar { display: none; } /* Chrome */
         
@@ -228,7 +245,11 @@
 
     <!-- Dynamic Brands Section -->
     <div class="section-title">
-        <span>🌟 Top Brands</span>
+        <span id="current-category-name">ALL</span>
+        <button class="brand-toggle-btn" onclick="toggleBrands()">
+            <span>Brand</span>
+            <svg id="brand-arrow" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transition: 0.3s;"><path stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
     </div>
     <div class="category-grid" id="brand-grid">
         <!-- Brands will be loaded here dynamically -->
@@ -291,31 +312,43 @@
             }
         });
 
-        // --- Dynamic Brands Logic ---
+        // ব্র্যান্ড লিস্ট খোলা বা বন্ধ করার ফাংশন
+        window.toggleBrands = () => {
+            const grid = document.getElementById('brand-grid');
+            const arrow = document.getElementById('brand-arrow');
+            grid.classList.toggle('show');
+            arrow.style.transform = grid.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+        };
+
         function renderBrands() {
             const brandGrid = document.getElementById('brand-grid');
-            
-            // ডাটাবেস থেকে সব ইউনিক ব্র্যান্ড কালেক্ট করা হচ্ছে (যাদের নাম দেয়া আছে)
             const uniqueBrands = [...new Set(allProducts.map(p => p.brand).filter(b => b && b.trim() !== ''))];
             
+            // "ALL" বাটনটি প্রথমে থাকবে
             let html = `
-                <div class="category-card active-brand" id="brand-btn-All" onclick="filterByBrand('All')">
-                    <div class="category-icon"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg></div>
-                    <div class="category-name">ALL</div>
+                <div class="category-card active-brand" id="brand-btn-All" onclick="selectBrand('All')">
+                    <div class="category-name" style="font-size: 13px;">All Products</div>
                 </div>
             `;
 
             uniqueBrands.forEach(brand => {
-                const initial = brand.charAt(0).toUpperCase();
                 html += `
-                    <div class="category-card" id="brand-btn-${brand.replace(/\s+/g, '-')}" onclick="filterByBrand('${brand}')">
-                        <div class="category-icon">${initial}</div>
-                        <div class="category-name">${brand}</div>
+                    <div class="category-card" id="brand-btn-${brand.replace(/\s+/g, '-')}" onclick="selectBrand('${brand}')">
+                        <div class="category-name" style="font-size: 13px;">${brand}</div>
                     </div>
                 `;
             });
             brandGrid.innerHTML = html;
         }
+
+        // ব্র্যান্ড সিলেক্ট করলে ফিল্টার হবে এবং লিস্ট বন্ধ হয়ে যাবে
+        window.selectBrand = (brand) => {
+            // টাইটেল আপডেট করা (ALL অথবা ব্র্যান্ডের নাম)
+            document.getElementById('current-category-name').textContent = brand === 'All' ? 'ALL' : brand;
+            
+            window.filterByBrand(brand); // ফিল্টার ফাংশন কল
+            window.toggleBrands(); // লিস্ট বন্ধ করা
+        };
 
         window.filterByBrand = (brand) => {
             // UI Update - Highlight Selected Brand
