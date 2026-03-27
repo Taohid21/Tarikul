@@ -168,10 +168,37 @@
 
     #order-success-message { display: none; text-align: center; padding: 60px 20px; }
     #order-success-message svg { width: 80px; color: var(--success-color); margin-bottom: 20px;}
-/* Coupon Styles */
-    .coupon-wrapper { display: flex; gap: 10px; margin-bottom: 20px; }
-    .coupon-input { flex: 1; padding: 10px 15px; border: 1px dashed var(--primary-color); border-radius: 8px; font-size: 1rem; text-transform: uppercase; font-family: var(--font-family-en); }
-    .coupon-btn { padding: 10px 20px; background: var(--secondary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+/* Coupon Styles Fixed */
+    .coupon-wrapper { 
+        display: flex; 
+        gap: 8px; 
+        margin-bottom: 20px; 
+        width: 100%; 
+        max-width: 100%; 
+        box-sizing: border-box; 
+    }
+    .coupon-input { 
+        flex: 1; 
+        min-width: 0; /* এটি ইনপুট বক্সকে স্ক্রিনের বাইরে যেতে বাধা দিবে */
+        padding: 10px 12px; 
+        border: 1px dashed var(--primary-color); 
+        border-radius: 8px; 
+        font-size: 0.95rem; 
+        text-transform: uppercase; 
+        font-family: var(--font-family-en); 
+        box-sizing: border-box;
+    }
+    .coupon-btn { 
+        white-space: nowrap; /* বাটন যেন ভেঙে নিচে না যায় */
+        padding: 10px 15px; 
+        background: var(--secondary-color); 
+        color: white; 
+        border: none; 
+        border-radius: 8px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        transition: 0.3s; 
+    }
     .coupon-btn:hover { background: var(--primary-color); }
     .applied-coupon-box { display: none; background: #e0f8e9; border: 1px solid var(--success-color); padding: 10px 15px; border-radius: 8px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .applied-coupon-box.active { display: flex; }
