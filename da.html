@@ -61,6 +61,15 @@
         .variant-row { display: flex; gap: 5px; margin-bottom: 5px; }
         .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #fff; font-weight: 700; }
     </style>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "bd4da99f-6bba-4b23-8de8-6a10e09e541f",
+    });
+  });
+</script>
 </head>
 <body>
 
@@ -100,7 +109,7 @@
             <div class="card">
                 <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                     অর্ডার ম্যানেজমেন্ট
-                    <input type="text" id="search-order-id" placeholder="🔍 আইডি বা ফোন খুঁজুন (যেমন: PHO1)..." style="max-width: 250px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;" onkeyup="renderOrders()">
+                    <input type="text" id="search-order-id" placeholder="🔍 আইডি বা ফোন খুঁজুন (যেমন: 1001)..." style="max-width: 250px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;" onkeyup="renderOrders()">
                 </div>
                 <div class="table-res">
                     <table>
@@ -205,6 +214,7 @@
 
         let products = {}, orders = {}, adminData = {};
         let isAdminDataLoaded = false;
+        let isProcessingOrders = false; // স্কিপিং বন্ধ করার লক
 
         // --- Navigation ---
         window.switchView = (id, btn) => {
@@ -413,43 +423,41 @@
 
         // --- Orders ---
         function renderOrders() {
-            let nextPhoId = adminData.nextPhoId || 1;
+            let nextOrderId = adminData.nextOrderId || 1001; 
             let dbUpdates = {};
-            let isFirstRun = adminData.phoInitialized !== true;
+            let isFirstRun = adminData.orderIdInitialized !== true;
             let hasChanges = false;
 
             const sortedEntries = Object.entries(orders).sort((a,b) => new Date(a[1].date || a[1].orderTimestamp) - new Date(b[1].date || b[1].orderTimestamp));
 
-            // ১. আগে চেক করে নিই ডাটাবেসে কোনো আপডেট লাগবে কিনা (নতুন আইডি দেওয়ার জন্য)
             sortedEntries.forEach(([id, o]) => {
                 if (!o.customId && !o.legacy) {
                     if (isFirstRun) {
                         dbUpdates[`orders/${id}/legacy`] = true;
+                        o.legacy = true; // সাথে সাথে লোকাল ডাটা আপডেট
                         hasChanges = true;
                     } else {
-                        dbUpdates[`orders/${id}/customId`] = `PHO${nextPhoId}`;
-                        nextPhoId++;
+                        const newId = nextOrderId.toString();
+                        dbUpdates[`orders/${id}/customId`] = newId;
+                        o.customId = newId; // সাথে সাথে লোকাল ডাটা আপডেট (যাতে গ্লিচ না করে)
+                        nextOrderId++;
                         hasChanges = true;
                     }
                 }
             });
 
-            // ২. যদি নতুন আইডি আপডেট করার থাকে, তবে ফায়ারবেসে পাঠিয়ে ফাংশন থামিয়ে দিব। 
-            // (ফায়ারবেস আপডেট হলে onValue নিজে থেকেই আবার ডাটা নিয়ে ফ্রেশ লিস্ট দেখাবে, এতে ডাবল শো করার গ্লিচ হবে না)
+            // ব্যাকগ্রাউন্ডে ফায়ারবেস আপডেট হবে, ফলে পেজ আর আটকাবে না
             if (hasChanges) {
-                if (isFirstRun) dbUpdates[`admin_controls/phoInitialized`] = true;
-                if (!isFirstRun) dbUpdates[`admin_controls/nextPhoId`] = nextPhoId;
+                if (isFirstRun) dbUpdates[`admin_controls/orderIdInitialized`] = true;
+                if (!isFirstRun) dbUpdates[`admin_controls/nextOrderId`] = nextOrderId;
                 update(ref(db), dbUpdates); 
-                return; 
             }
 
-            // ৩. আর যদি সব ডাটা ঠিক থাকে, তবে লিস্ট রেন্ডার করব
             const list = document.getElementById('admin-orders-list'); 
             list.innerHTML = '';
             const searchInput = document.getElementById('search-order-id');
             const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-            // অর্ডার লিস্টে দেখানো (নতুন অর্ডার উপরে দেখানোর জন্য reverse করা হয়েছে)
             sortedEntries.reverse().forEach(([id, o]) => {
                 const cust = o.customer || o.customerInfo || {};
                 const total = o.financials?.total || o.totalAmount || 0;
@@ -457,7 +465,7 @@
 
                 if (searchQuery) {
                     const phone = cust.phone || '';
-                    if (!displayId.toLowerCase().includes(searchQuery) && !phone.includes(searchQuery)) {
+                    if (!displayId.toString().toLowerCase().includes(searchQuery) && !phone.includes(searchQuery)) {
                         return;
                     }
                 }
