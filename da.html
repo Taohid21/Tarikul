@@ -107,7 +107,10 @@
         <!-- Orders -->
         <div id="orders-view" class="view">
             <div class="card">
-                <div class="card-header">অর্ডার ম্যানেজমেন্ট</div>
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    অর্ডার ম্যানেজমেন্ট
+                    <input type="text" id="search-order-id" placeholder="🔍 আইডি বা ফোন খুঁজুন (যেমন: PHO1)..." style="max-width: 250px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;" onkeyup="renderOrders()">
+                </div>
                 <div class="table-res">
                     <table>
                         <thead><tr><th>ID</th><th>নাম ও ফোন</th><th>টাকা</th><th>অবস্থা</th><th>অ্যাকশন</th></tr></thead>
@@ -210,6 +213,7 @@
         const db = getDatabase(app);
 
         let products = {}, orders = {}, adminData = {};
+        let isAdminDataLoaded = false;
 
         // --- Navigation ---
         window.switchView = (id, btn) => {
@@ -222,9 +226,11 @@
         // --- Load Data ---
         onValue(ref(db, 'admin_controls'), snap => {
             adminData = snap.val() || {};
+            isAdminDataLoaded = true;
             loadSettings();
             renderCoupons();
             renderProducts();
+            if(Object.keys(orders).length > 0) renderOrders();
         });
 
         onValue(ref(db, 'products'), snap => {
@@ -235,7 +241,7 @@
 
         onValue(ref(db, 'orders'), snap => {
             orders = snap.val() || {};
-            renderOrders();
+            if(isAdminDataLoaded) renderOrders();
             renderDashboard();
         });
 
@@ -257,7 +263,8 @@
             Object.entries(orders).sort((a,b)=> new Date(b[1].date || b[1].orderTimestamp) - new Date(a[1].date || a[1].orderTimestamp)).slice(0, 5).forEach(([id, o]) => {
                 const cust = o.customer || o.customerInfo || {};
                 const total = o.financials?.total || o.totalAmount || 0;
-                dashList.innerHTML += `<tr><td>#${o.publicId || id.slice(-5)}</td><td>${cust.name || 'N/A'}</td><td>৳${total}</td><td>${o.status}</td></tr>`;
+                const displayId = o.customId || o.publicId || id.slice(-5);
+                dashList.innerHTML += `<tr><td>#${displayId}</td><td>${cust.name || 'N/A'}</td><td>৳${total}</td><td>${o.status}</td></tr>`;
             });
         }
 
@@ -415,12 +422,57 @@
 
         // --- Orders ---
         function renderOrders() {
-            const list = document.getElementById('admin-orders-list'); list.innerHTML = '';
-            Object.entries(orders).sort((a,b)=> new Date(b[1].date || b[1].orderTimestamp) - new Date(a[1].date || a[1].orderTimestamp)).forEach(([id, o]) => {
+            let nextPhoId = adminData.nextPhoId || 1;
+            let dbUpdates = {};
+            let isFirstRun = adminData.phoInitialized !== true;
+            let hasChanges = false;
+
+            const sortedEntries = Object.entries(orders).sort((a,b) => new Date(a[1].date || a[1].orderTimestamp) - new Date(b[1].date || b[1].orderTimestamp));
+
+            // ১. আগে চেক করে নিই ডাটাবেসে কোনো আপডেট লাগবে কিনা (নতুন আইডি দেওয়ার জন্য)
+            sortedEntries.forEach(([id, o]) => {
+                if (!o.customId && !o.legacy) {
+                    if (isFirstRun) {
+                        dbUpdates[`orders/${id}/legacy`] = true;
+                        hasChanges = true;
+                    } else {
+                        dbUpdates[`orders/${id}/customId`] = `PHO${nextPhoId}`;
+                        nextPhoId++;
+                        hasChanges = true;
+                    }
+                }
+            });
+
+            // ২. যদি নতুন আইডি আপডেট করার থাকে, তবে ফায়ারবেসে পাঠিয়ে ফাংশন থামিয়ে দিব। 
+            // (ফায়ারবেস আপডেট হলে onValue নিজে থেকেই আবার ডাটা নিয়ে ফ্রেশ লিস্ট দেখাবে, এতে ডাবল শো করার গ্লিচ হবে না)
+            if (hasChanges) {
+                if (isFirstRun) dbUpdates[`admin_controls/phoInitialized`] = true;
+                if (!isFirstRun) dbUpdates[`admin_controls/nextPhoId`] = nextPhoId;
+                update(ref(db), dbUpdates); 
+                return; 
+            }
+
+            // ৩. আর যদি সব ডাটা ঠিক থাকে, তবে লিস্ট রেন্ডার করব
+            const list = document.getElementById('admin-orders-list'); 
+            list.innerHTML = '';
+            const searchInput = document.getElementById('search-order-id');
+            const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            // অর্ডার লিস্টে দেখানো (নতুন অর্ডার উপরে দেখানোর জন্য reverse করা হয়েছে)
+            sortedEntries.reverse().forEach(([id, o]) => {
                 const cust = o.customer || o.customerInfo || {};
                 const total = o.financials?.total || o.totalAmount || 0;
+                const displayId = o.customId || o.publicId || id.slice(-5);
+
+                if (searchQuery) {
+                    const phone = cust.phone || '';
+                    if (!displayId.toLowerCase().includes(searchQuery) && !phone.includes(searchQuery)) {
+                        return;
+                    }
+                }
+
                 list.innerHTML += `<tr>
-                    <td>#${o.publicId || id.slice(-5)}</td>
+                    <td>#${displayId}</td>
                     <td>${cust.name || 'N/A'}<br><small>${cust.phone || ''}</small></td>
                     <td>৳${total}</td>
                     <td><span class="badge" style="background:${getStatusColor(o.status)}">${o.status || 'Pending'}</span></td>
@@ -454,11 +506,14 @@
                 orderItems = [o.product]; // Direct Buy from product_view
             }
 
-            const infoText = `নাম: ${cust.name}\nফোন: ${cust.phone}\nঠিকানা: ${cust.address}, ${dist}\nমোট প্রদেয়: ৳${fin.total}\nঅ্যাডভান্সড: ৳${totalAdvance}\nবাকি (ক্যাশ অন ডেলিভারি): ৳${dueAmt}`;
+            // নতুন Order ID (PHO1, PHO2) অথবা আগের ID বের করা
+            const displayId = o.customId || o.publicId || id.slice(-5);
+
+            const infoText = `অর্ডার আইডি: #${displayId}\nনাম: ${cust.name}\nফোন: ${cust.phone}\nঠিকানা: ${cust.address}, ${dist}\nমোট প্রদেয়: ৳${fin.total}\nঅ্যাডভান্সড: ৳${totalAdvance}\nবাকি (ক্যাশ অন ডেলিভারি): ৳${dueAmt}`;
 
             body.innerHTML = `
                 <span class="close-modal" onclick="closeModal()">&times;</span>
-                <h3 style="margin-bottom:15px; color:var(--primary);">Order #${o.publicId || id.slice(-5)}</h3>
+                <h3 style="margin-bottom:15px; color:var(--primary);">Order #${displayId}</h3>
                 
                 <div style="background:#f8fafc; padding:15px; border-radius:10px; margin-bottom:15px; position:relative; font-size:14px; border:1px solid var(--border);">
                     <button class="btn btn-primary btn-sm" style="position:absolute; right:10px; top:10px;" onclick="copyToClipboard(\`${infoText}\`)">কপি</button>
