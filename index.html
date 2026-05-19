@@ -7,90 +7,93 @@
     <title>Perfume Heaven - Premium Store</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- CSS - অপরিবর্তিত রাখা হয়েছে -->
     <style>
         :root { --primary: #0f4c3a; --accent: #e94560; --bg: #f6f9fc; --card: #ffffff; --text: #2b3445; --border: #e3e9ef; --header-h: 70px; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); color: var(--text); }
-        .header { background: rgba(255, 255, 255, 0.95); height: var(--header-h); position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); }
+        .header { background: #fff; height: var(--header-h); position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); }
+        .header-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .logo img { height: 45px; }
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        #drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; }
+        #drawer-overlay.active { display: block; }
+        #drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #fff; z-index: 2001; transition: 0.3s; }
+        #drawer.active { left: 0; }
+        .drawer-header { padding: 30px 20px; background: var(--primary); color: #fff; }
+        .drawer-item { padding: 15px 20px; display: block; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: inherit; font-family: 'Poppins', sans-serif;}
+        .hero-banner { margin: 15px; border-radius: 15px; background: linear-gradient(135deg, var(--primary), #1a7a5c); color: #fff; padding: 30px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .filter-bar { display: flex; gap: 10px; padding: 20px 15px 10px; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px 100px; }
         .product-card { background: #fff; border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
-        .image-box { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .image-box img { max-width: 100%; }
-        #app-iframe-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 3000; display: none; }
-        #app-frame { width: 100%; height: 100%; border: none; }
+        .image-box { width: 100%; aspect-ratio: 1/1; cursor: pointer; }
+        .image-box img { width: 100%; height: 100%; object-fit: cover; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); z-index: 1500; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; cursor: pointer; }
+        .cart-count-badge { background: var(--accent); color: #fff; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; position: absolute; top: 0; right: 0; }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <div id="drawer-overlay" onclick="closeDrawer()"></div>
+    <div id="drawer">
+        <div class="drawer-header"><h2>Menu</h2></div>
+        <a href="index.html" class="drawer-item">Home</a>
+        <a href="orders.html" class="drawer-item">My Orders</a>
+        <a href="account.html" class="drawer-item">My Account</a>
+        <a href="contact.html" class="drawer-item">Contact Us</a>
+    </div>
+
     <header class="header">
+        <div class="header-btn" onclick="openDrawer()"><svg style="width:26px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></div>
         <div class="logo"><img src="https://i.postimg.cc/cCKd21YV/FB-IMG-1751915283498-prev-ui.png" alt="Logo"></div>
+        <div class="header-btn" onclick="window.location.href='cart.html'" style="position:relative;">
+            <svg style="width:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            <span class="cart-count-badge cart-total-qty">0</span>
+        </div>
     </header>
 
-    <!-- Product Grid -->
+    <div class="hero-banner"><h2>Premium Fragrances</h2></div>
     <div class="product-grid" id="product-grid"></div>
 
-    <!-- Iframe Modal (ডাইনামিক লোড হবে) -->
-    <div id="app-iframe-modal">
-        <div style="padding: 10px; cursor:pointer;" onclick="closeIframe()">← Back</div>
-        <iframe id="app-frame" src=""></iframe>
-    </div>
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='index.html'">Home</div>
+        <div class="nav-item" onclick="window.location.href='search.html'">Search</div>
+        <div class="nav-item" onclick="window.location.href='cart.html'">Cart</div>
+        <div class="nav-item" onclick="window.location.href='account.html'">Profile</div>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY",
-            databaseURL: "https://movie-92659-default-rtdb.firebaseio.com",
-            projectId: "movie-92659",
-        };
+        const firebaseConfig = { apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY", databaseURL: "https://movie-92659-default-rtdb.firebaseio.com" };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // প্রোডাক্ট ওপেন করার ফাংশন
-        window.openProduct = (id) => {
-            const modal = document.getElementById('app-iframe-modal');
-            const frame = document.getElementById('app-frame');
-            frame.src = `product_view.html?id=${id}`;
-            modal.style.display = 'block';
-            
-            // ইউআরএল আপডেট করা যাতে ফেসবুকে আলাদা লিংক হিসেবে কাজ করে
-            const newUrl = window.location.origin + window.location.pathname + '?id=' + id;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-        };
-
-        window.closeIframe = () => {
-            document.getElementById('app-iframe-modal').style.display = 'none';
-            window.history.pushState({}, '', window.location.pathname);
-        };
-
-        // ডাটাবেস থেকে প্রোডাক্ট লোড
         onValue(ref(db, 'products'), snap => {
-            if(snap.exists()) {
-                const products = Object.entries(snap.val()).map(([id, data]) => ({ id, ...data }));
-                render(products);
-                
-                // ইউআরএল এ আইডি থাকলে অটোমেটিক ওপেন হবে
-                const urlParams = new URLSearchParams(window.location.search);
-                const idFromUrl = urlParams.get('id');
-                if(idFromUrl) {
-                    setTimeout(() => openProduct(idFromUrl), 1000);
-                }
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            if(snap.exists()){
+                Object.entries(snap.val()).forEach(([id, p]) => {
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <div class="image-box" onclick="window.location.href='product_view.html?id=${id}'">
+                                <img src="${p.imageUrl}" alt="${p.title}">
+                            </div>
+                            <div style="padding:10px;">
+                                <div>${p.title}</div>
+                                <div style="font-weight:700; color:var(--primary);">৳${p.price}</div>
+                            </div>
+                        </div>`;
+                });
             }
         });
 
-        function render(products) {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = products.map(p => `
-                <div class="product-card" onclick="openProduct('${p.id}')">
-                    <div class="image-box"><img src="${p.imageUrl}" loading="lazy"></div>
-                    <div style="padding:10px;">${p.title}</div>
-                </div>
-            `).join('');
-        }
+        window.openDrawer = () => { document.getElementById('drawer').classList.add('active'); document.getElementById('drawer-overlay').classList.add('active'); };
+        window.closeDrawer = () => { document.getElementById('drawer').classList.remove('active'); document.getElementById('drawer-overlay').classList.remove('active'); };
+        
+        // কার্ট আপডেট করার জন্য
+        const cart = JSON.parse(localStorage.getItem('shoppingCart') || '[]');
+        document.querySelector('.cart-total-qty').textContent = cart.reduce((acc, curr) => acc + curr.quantity, 0);
     </script>
 </body>
 </html>
